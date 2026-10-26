@@ -135,5 +135,44 @@ namespace Service_Center
                 LoadCustomers_Click(sender, e);
             }
         }
+
+        private void LoadDevices_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                var devicesList = db.CustomerDevices
+                    .Include(d => d.Customer) // Підтягуємо дані про власника пристрою
+                    .ToList();
+
+                dgDevices.ItemsSource = devicesList;
+            }
+        }
+
+        private void AddDevice_Click(object sender, RoutedEventArgs e)
+        {
+            AddDeviceWindow addWindow = new AddDeviceWindow();
+            if (addWindow.ShowDialog() == true)
+            {
+                LoadDevices_Click(sender, e);
+            }
+        }
+
+        private void EditRepair_Click(object sender, RoutedEventArgs e)
+        {
+            // Отримуємо вибраний у таблиці ремонт
+            var selectedRepair = dgRepairs.SelectedItem as Service_Store.Models.Repair;
+
+            if (selectedRepair == null)
+            {
+                MessageBox.Show("Будь ласка, оберіть ремонт із таблиці для редагування!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            EditRepairWindow editWindow = new EditRepairWindow(selectedRepair.RepairId);
+            if (editWindow.ShowDialog() == true)
+            {
+                LoadRepairs_Click(sender, e);
+            }
+        }
     }
 }

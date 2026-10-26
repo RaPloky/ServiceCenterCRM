@@ -15,24 +15,33 @@ namespace Service_Store.Models
         public string RepairNumber { get; set; } = string.Empty;
 
         [Column("customer_id")]
-        public int CustomerId { get; set; } // Додано зв'язок з клієнтом
+        public int CustomerId { get; set; }
 
         [Column("device_id")]
-        public int DeviceId { get; set; }   // Додано зв'язок з пристроєм
+        public int DeviceId { get; set; }
 
         [Column("created_by")]
-        public int CreatedBy { get; set; }  // Додано зв'язок з працівником
+        public int CreatedBy { get; set; }
+
+        [Column("assigned_employee_id")]
+        public int? AssignedEmployeeId { get; set; }
 
         [Column("status_id")]
         public int StatusId { get; set; }
 
         [Column("customer_description")]
-        public string CustomerDescription { get; set; } = string.Empty;
+        public string? CustomerDescription { get; set; }
 
-        [Column("received_at")]
-        public DateTime ReceivedAt { get; set; }
+        [Column("internal_notes")]
+        public string? InternalNotes { get; set; }
 
         [Column("estimated_price")]
         public decimal EstimatedPrice { get; set; }
+
+        [Column("final_price")]
+        public decimal? FinalPrice { get; set; }
+
+        [Column("received_at")]
+        public DateTime ReceivedAt { get; set; }
     }
 }

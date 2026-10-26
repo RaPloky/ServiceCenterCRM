@@ -33,7 +33,12 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити список" Width="120" Height="30" Click="LoadRepairs_Click"/>
                     </StackPanel>
-                    
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Оновити список" Width="130" Height="30" Margin="0,0,10,0" Click="LoadRepairs_Click"/>
+                        <Button Content="+ Новий ремонт" Width="130" Height="30" Margin="0,0,10,0" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddRepair_Click"/>
+                        <Button Content="Редагувати / Статус" Width="150" Height="30" Background="#007ACC" Foreground="White" FontWeight="Bold" Click="EditRepair_Click"/>
+                    </StackPanel>
+
 
                     <!-- Таблиця для виведення ремонтів -->
                     <DataGrid x:Name="dgRepairs" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
@@ -126,6 +131,35 @@
                             <DataGridTextColumn Header="Кількість" Binding="{Binding Quantity}" Width="80"/>
                             <DataGridTextColumn Header="У резерві" Binding="{Binding ReservedQuantity}" Width="80"/>
                             <DataGridTextColumn Header="Мінімум" Binding="{Binding MinimumQuantity}" Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Пристрої клієнтів">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель дій -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Оновити список" Width="140" Height="30" Click="LoadDevices_Click"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Оновити список" Width="140" Height="30" Margin="0,0,10,0" Click="LoadDevices_Click"/>
+                        <Button Content="+ Новий пристрій" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddDevice_Click"/>
+                    </StackPanel>
+
+                    <!-- Таблиця пристроїв -->
+                    <DataGrid x:Name="dgDevices" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding DeviceId}" Width="40"/>
+                            <DataGridTextColumn Header="Тип" Binding="{Binding DeviceType}" Width="100"/>
+                            <DataGridTextColumn Header="Бренд" Binding="{Binding Brand}" Width="100"/>
+                            <DataGridTextColumn Header="Модель" Binding="{Binding Model}" Width="130"/>
+                            <DataGridTextColumn Header="Серійний номер" Binding="{Binding SerialNumber}" Width="140"/>
+                            <DataGridTextColumn Header="Власник (Клієнт)" Binding="{Binding Customer.LastName}" Width="120"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

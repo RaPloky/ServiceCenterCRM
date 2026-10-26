@@ -13,6 +13,8 @@ namespace Service_Center.Data
         public DbSet<SaleItem> SaleItems { get; set; }
         public DbSet<WarehouseStock> WarehouseStocks { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<CustomerDevice> CustomerDevices { get; set; }
+        public DbSet<RepairStatus> RepairStatuses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
