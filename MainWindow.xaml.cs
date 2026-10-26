@@ -191,5 +191,36 @@ namespace Service_Center
                 LoadSales_Click(sender, e);
             }
         }
+
+        private void LoadSuppliersList_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                dgSuppliers.ItemsSource = db.Suppliers.ToList();
+            }
+        }
+
+        private void AddSupplier_Click(object sender, RoutedEventArgs e)
+        {
+            AddSupplierWindow addWindow = new AddSupplierWindow();
+            if (addWindow.ShowDialog() == true)
+            {
+                LoadSuppliersList_Click(sender, e);
+                LoadSuppliers_Click(sender, e);
+            }
+        }
+
+        private void LoadSuppliers_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                var supplierProductsList = db.SupplierProducts
+                    .Include(sp => sp.Supplier)
+                    .Include(sp => sp.Product)
+                    .ToList();
+
+                dgSupplierProducts.ItemsSource = supplierProductsList;
+            }
+        }
     }
 }

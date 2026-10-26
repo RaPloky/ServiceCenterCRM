@@ -186,6 +186,59 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
+            <TabItem Header="Постачальники">
+                <TabControl Margin="5">
+                    <!-- Підвкладка 1: Компанії-постачальники -->
+                    <TabItem Header="Компанії">
+                        <Grid Margin="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Button Content="Оновити список" Width="140" Height="30" Margin="0,0,10,0" Click="LoadSuppliersList_Click"/>
+                                <Button Content="+ Новий постачальник" Width="150" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddSupplier_Click"/>
+                            </StackPanel>
+
+                            <DataGrid x:Name="dgSuppliers" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding SupplierId}" Width="40"/>
+                                    <DataGridTextColumn Header="Компанія" Binding="{Binding CompanyName}" Width="160"/>
+                                    <DataGridTextColumn Header="Контактна особа" Binding="{Binding ContactPerson}" Width="140"/>
+                                    <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="130"/>
+                                    <DataGridTextColumn Header="Адреса" Binding="{Binding Address}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- Підвкладка 2: Прайс-лист товарів -->
+                    <TabItem Header="Прайс-лист товарів">
+                        <Grid Margin="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                <Button Content="Оновити прайс" Width="140" Height="30" Click="LoadSuppliers_Click"/>
+                            </StackPanel>
+
+                            <DataGrid x:Name="dgSupplierProducts" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Постачальник" Binding="{Binding Supplier.CompanyName}" Width="150"/>
+                                    <DataGridTextColumn Header="Товар" Binding="{Binding Product.Name}" Width="200"/>
+                                    <DataGridTextColumn Header="SKU" Binding="{Binding Product.Sku}" Width="120"/>
+                                    <DataGridTextColumn Header="Закупівельна ціна (грн)" Binding="{Binding PurchasePrice}" Width="140"/>
+                                    <DataGridTextColumn Header="Доставка (днів)" Binding="{Binding DeliveryDays}" Width="110"/>
+                                    <DataGridCheckBoxColumn Header="В наявності" Binding="{Binding IsAvailable}" Width="90"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
             <!-- Вкладка адміністратора, яку ми будемо ховати для звичайних ролей -->
             <TabItem x:Name="tabAdmin" Header="Адміністрування">
                 <TextBlock Text="Управління працівниками та налаштування системи (Доступно лише Адміну)" Margin="20" FontSize="16"/>
