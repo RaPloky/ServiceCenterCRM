@@ -1,0 +1,28 @@
+﻿<Window x:Class="Service_Store.AddSalaryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Виплата зарплати" Height="420" Width="400" 
+        WindowStartupLocation="CenterScreen" ResizeMode="CanResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0">
+            <TextBlock Text="Працівник:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <ComboBox x:Name="cbEmployees" Height="32" VerticalContentAlignment="Center" Margin="0,0,0,12" DisplayMemberPath="LastName" SelectedValuePath="EmployeeId"/>
+
+            <TextBlock Text="Сума виплати (грн):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtAmount" Height="32" VerticalContentAlignment="Center" Padding="5" Margin="0,0,0,12"/>
+
+            <TextBlock Text="Період (напр. Жовтень 2026):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtPeriod" Height="32" VerticalContentAlignment="Center" Padding="5" Margin="0,0,0,12"/>
+
+            <TextBlock Text="Примітки (необов'язково):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtNotes" Height="50" AcceptsReturn="True" TextWrapping="Wrap" Padding="5" Margin="0,0,0,5"/>
+        </StackPanel>
+
+        <Button Grid.Row="1" Content="Зберегти виплату" Height="45" Background="#28A745" Foreground="White" FontWeight="Bold" Click="SaveSalary_Click" Margin="0,15,0,0"/>
+    </Grid>
+</Window>

@@ -18,6 +18,7 @@ namespace Service_Center.Data
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<SupplierProduct> SupplierProducts { get; set; }
+        public DbSet<SalaryRecord> SalaryRecords { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

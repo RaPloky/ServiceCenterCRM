@@ -222,5 +222,25 @@ namespace Service_Center
                 dgSupplierProducts.ItemsSource = supplierProductsList;
             }
         }
+
+        private void LoadSalaries_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                dgSalaries.ItemsSource = db.SalaryRecords
+                    .Include(sr => sr.Employee)
+                    .OrderByDescending(sr => sr.PaymentDate)
+                    .ToList();
+            }
+        }
+
+        private void AddSalary_Click(object sender, RoutedEventArgs e)
+        {
+            AddSalaryWindow salaryWindow = new AddSalaryWindow();
+            if (salaryWindow.ShowDialog() == true)
+            {
+                LoadSalaries_Click(sender, e);
+            }
+        }
     }
 }
