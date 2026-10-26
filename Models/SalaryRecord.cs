@@ -25,7 +25,7 @@ namespace Service_Store.Models
         public string? Status { get; set; }
 
         [Column("paid_at")]
-        public DateTime PaymentDate { get; set; }
+        public DateTime? PaymentDate { get; set; }
 
         // Навігаційна властивість до працівника
         [ForeignKey("EmployeeId")]
