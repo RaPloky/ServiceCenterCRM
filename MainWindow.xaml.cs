@@ -174,5 +174,22 @@ namespace Service_Center
                 LoadRepairs_Click(sender, e);
             }
         }
+
+        private void LoadSales_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                dgSales.ItemsSource = db.Sales.OrderByDescending(s => s.SaleDate).ToList();
+            }
+        }
+
+        private void AddSale_Click(object sender, RoutedEventArgs e)
+        {
+            CreateSaleWindow saleWindow = new CreateSaleWindow();
+            if (saleWindow.ShowDialog() == true)
+            {
+                LoadSales_Click(sender, e);
+            }
+        }
     }
 }

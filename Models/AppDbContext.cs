@@ -15,6 +15,7 @@ namespace Service_Center.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<CustomerDevice> CustomerDevices { get; set; }
         public DbSet<RepairStatus> RepairStatuses { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

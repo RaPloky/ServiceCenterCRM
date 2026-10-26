@@ -52,6 +52,28 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
+            <TabItem Header="Продажі">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Оновити історію" Width="140" Height="30" Margin="0,0,10,0" Click="LoadSales_Click"/>
+                        <Button Content="+ Новий продаж" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddSale_Click"/>
+                    </StackPanel>
+
+                    <DataGrid x:Name="dgSales" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding SaleId}" Width="40"/>
+                            <DataGridTextColumn Header="Номер чеку" Binding="{Binding SaleNumber}" Width="130"/>
+                            <DataGridTextColumn Header="Дата" Binding="{Binding SaleDate}" Width="140"/>
+                            <DataGridTextColumn Header="Сума (грн)" Binding="{Binding TotalAmount}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
             <TabItem Header="Магазин / Продажі">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>

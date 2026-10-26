@@ -11,14 +11,20 @@ namespace Service_Store.Models
         [Column("sale_id")]
         public int SaleId { get; set; }
 
+        [Column("sale_number")]
+        public string SaleNumber { get; set; } = string.Empty;
+
+        [Column("customer_id")]
+        public int? CustomerId { get; set; }
+
         [Column("employee_id")]
         public int EmployeeId { get; set; }
 
-        [Column("customer_id")]
-        public int CustomerId { get; set; }
-
         [Column("sale_date")]
         public DateTime SaleDate { get; set; }
+
+        [Column("bonus_used")]
+        public decimal BonusUsed { get; set; }
 
         [Column("total_amount")]
         public decimal TotalAmount { get; set; }
