@@ -1,0 +1,18 @@
+﻿using Microsoft.EntityFrameworkCore;
+using ServiceCenterCRM.Models;
+
+namespace ServiceCenterCRM.Data
+{
+    public class AppDbContext : DbContext
+    {
+        public DbSet<Employee> Employees { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            // Заміни рядок підключення на свої дані (Server, Database, User ID, Password)
+            string connectionString = "Server=localhost;Database=service_center_db;Uid=root;Pwd=;";
+
+            optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+        }
+    }
+}
