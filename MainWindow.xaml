@@ -1,12 +1,36 @@
 ﻿<Window x:Class="ServiceCenterCRM.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ServiceCenterCRM"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="CRM Сервісного Центру - Головне меню" Height="550" Width="900" WindowStartupLocation="CenterScreen">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <!-- Верхня панель (Шапка з інформацією про працівника) -->
+        <Border Background="#007ACC" Grid.Row="0">
+            <Grid Margin="15,0">
+                <TextBlock x:Name="txtUserInfo" Text="Користувач: ..." Foreground="White" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <Button Content="Вийти" Width="80" Height="28" HorizontalAlignment="Right" Click="Logout_Click"/>
+            </Grid>
+        </Border>
+
+        <!-- Головне робоче середовище (Вкладки) -->
+        <TabControl Grid.Row="1" Margin="10">
+            <TabItem Header="Ремонти (СЦ)">
+                <TextBlock Text="Тут буде управління ремонтами, статусами та чергою" Margin="20" FontSize="16"/>
+            </TabItem>
+            <TabItem Header="Магазин / Продажі">
+                <TextBlock Text="Тут буде каса, товари та оформлення продажів" Margin="20" FontSize="16"/>
+            </TabItem>
+            <TabItem Header="Склад">
+                <TextBlock Text="Тут буде облік залишків товарів та запчастин" Margin="20" FontSize="16"/>
+            </TabItem>
+            <!-- Вкладка адміністратора, яку ми будемо ховати для звичайних ролей -->
+            <TabItem x:Name="tabAdmin" Header="Адміністрування">
+                <TextBlock Text="Управління працівниками та налаштування системи (Доступно лише Адміну)" Margin="20" FontSize="16"/>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

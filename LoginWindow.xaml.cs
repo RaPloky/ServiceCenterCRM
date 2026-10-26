@@ -30,12 +30,10 @@ namespace ServiceCenterCRM
 
                 if (employee != null)
                 {
-                    MessageBox.Show($"Успішний вхід! Вітаємо, {employee.FirstName} {employee.LastName}.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    // Тут пізніше ми відкриватимемо головне вікно (Dashboard) і передаватимемо туди об'єкт employee для ролей
-                    // MainWindow main = new MainWindow(employee);
-                    // main.Show();
-                    // this.Close();
+                    // Замість старого MessageBox.Show(...) успішного входу робимо так:
+                    MainWindow mainWindow = new MainWindow(employee);
+                    mainWindow.Show();
+                    this.Close(); // Закриваємо вікно авторизації
                 }
                 else
                 {
