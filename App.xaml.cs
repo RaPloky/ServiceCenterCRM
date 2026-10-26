@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace ServiceCenterCRM
+namespace Service_Center
 {
     public partial class App : Application
     {

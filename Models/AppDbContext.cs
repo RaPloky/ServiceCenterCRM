@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Service_Store.Models;
-using ServiceCenterCRM.Models;
+using Service_Center.Models;
 
-namespace ServiceCenterCRM.Data
+namespace Service_Center.Data
 {
     public class AppDbContext : DbContext
     {

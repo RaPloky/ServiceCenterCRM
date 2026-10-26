@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Windows;
-using ServiceCenterCRM.Data;
+using Service_Center.Data;
 
-namespace ServiceCenterCRM
+namespace Service_Center
 {
     public partial class LoginWindow : Window
     {

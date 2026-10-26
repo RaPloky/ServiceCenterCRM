@@ -1,4 +1,4 @@
-﻿<Window x:Class="ServiceCenterCRM.LoginWindow"
+﻿<Window x:Class="Service_Center.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Авторизація - CRM Сервісного Центру" Height="320" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">

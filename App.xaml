@@ -1,7 +1,7 @@
-﻿<Application x:Class="ServiceCenterCRM.App"
+﻿<Application x:Class="Service_Center.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ServiceCenterCRM">
+             xmlns:local="clr-namespace:Service_Center">
     <Application.Resources>
          
     </Application.Resources>

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ServiceCenterCRM.Models
+namespace Service_Center.Models
 {
     [Table("employees")]
     public class Employee

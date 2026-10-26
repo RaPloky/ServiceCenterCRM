@@ -1,9 +1,9 @@
 ﻿using Service_Store;
-using ServiceCenterCRM.Data;
-using ServiceCenterCRM.Models;
+using Service_Center.Data;
+using Service_Center.Models;
 using System.Windows;
 
-namespace ServiceCenterCRM
+namespace Service_Center
 {
     public partial class MainWindow : Window
     {
