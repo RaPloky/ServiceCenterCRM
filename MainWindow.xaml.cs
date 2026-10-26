@@ -1,6 +1,7 @@
-﻿using Service_Store;
-using Service_Center.Data;
+﻿using Service_Center.Data;
 using Service_Center.Models;
+using Service_Store;
+using Service_Store.Models;
 using System.Windows;
 
 namespace Service_Center
@@ -62,6 +63,47 @@ namespace Service_Center
                 var productsList = db.Products.ToList();
                 dgProducts.ItemsSource = productsList;
             }
+        }
+
+        private void CreateSale_Click(object sender, RoutedEventArgs e)
+        {
+            // Отримуємо товар, який користувач виділив у таблиці
+            var selectedProduct = dgProducts.SelectedItem as Service_Store.Models.Product;
+
+            if (selectedProduct == null)
+            {
+                MessageBox.Show("Будь ласка, виберіть товар із каталогу для продажу!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            using (var db = new AppDbContext())
+            {
+                // 1. Створюємо запис про продаж
+                var newSale = new Sale
+                {
+                    EmployeeId = _currentEmployee.EmployeeId, // Заточено під поточного залогіненого працівника
+                    CustomerId = 1, // Базовий клієнт для прикладу
+                    SaleDate = DateTime.Now,
+                    TotalAmount = selectedProduct.SalePrice
+                };
+
+                db.Sales.Add(newSale);
+                db.SaveChanges(); // Зберігаємо, щоб отримати згенерований SaleId
+
+                // 2. Додаємо позицію до чек-листа продажу
+                var saleItem = new SaleItem
+                {
+                    SaleId = newSale.SaleId,
+                    ProductId = selectedProduct.ProductId,
+                    Quantity = 1,
+                    UnitPrice = selectedProduct.SalePrice
+                };
+
+                db.SaleItems.Add(saleItem);
+                db.SaveChanges();
+            }
+
+            MessageBox.Show($"Успішно оформлено продаж товару: {selectedProduct.Name} на суму {selectedProduct.SalePrice} грн!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
         }
     }
 }

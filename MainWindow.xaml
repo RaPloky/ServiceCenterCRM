@@ -58,6 +58,10 @@
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити каталог" Width="130" Height="30" Margin="0,0,10,0" Click="LoadProducts_Click"/>
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Оновити каталог" Width="130" Height="30" Margin="0,0,10,0" Click="LoadProducts_Click"/>
+                        <Button Content="Продати обраний товар" Width="160" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="CreateSale_Click"/>
+                    </StackPanel>
 
                     <!-- Таблиця товарів -->
                     <DataGrid x:Name="dgProducts" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
