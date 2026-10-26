@@ -1,0 +1,22 @@
+﻿<Window x:Class="Service_Store.AddCustomerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Новий клієнт" Height="380" Width="380" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid Margin="20">
+        <StackPanel>
+            <TextBlock Text="Прізвище:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtLastName" Height="30" VerticalContentAlignment="Center" Padding="5" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Ім'я:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtFirstName" Height="30" VerticalContentAlignment="Center" Padding="5" Margin="0,0,0,10"/>
+
+            <TextBlock Text="По батькові:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtMiddleName" Height="30" VerticalContentAlignment="Center" Padding="5" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Телефон:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBox x:Name="txtPhone" Height="30" VerticalContentAlignment="Center" Padding="5" Margin="0,0,0,20"/>
+
+            <Button Content="Зберегти клієнта" Height="40" Background="#28A745" Foreground="White" FontWeight="Bold" Click="SaveCustomer_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

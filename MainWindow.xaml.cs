@@ -118,5 +118,22 @@ namespace Service_Center
                 dgWarehouse.ItemsSource = stockList;
             }
         }
+        private void LoadCustomers_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                var customersList = db.Customers.ToList();
+                dgCustomers.ItemsSource = customersList;
+            }
+        }
+
+        private void AddCustomer_Click(object sender, RoutedEventArgs e)
+        {
+            AddCustomerWindow addWindow = new AddCustomerWindow();
+            if (addWindow.ShowDialog() == true)
+            {
+                LoadCustomers_Click(sender, e);
+            }
+        }
     }
 }
