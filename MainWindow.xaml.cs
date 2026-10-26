@@ -1,5 +1,6 @@
-﻿using System.Windows;
+﻿using ServiceCenterCRM.Data;
 using ServiceCenterCRM.Models;
+using System.Windows;
 
 namespace ServiceCenterCRM
 {
@@ -21,6 +22,7 @@ namespace ServiceCenterCRM
             {
                 tabAdmin.Visibility = Visibility.Collapsed;
             }
+            LoadRepairs_Click(null, null);
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)
@@ -29,6 +31,16 @@ namespace ServiceCenterCRM
             LoginWindow login = new LoginWindow();
             login.Show();
             this.Close();
+        }
+
+        private void LoadRepairs_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                // Завантажуємо список ремонтів із бази даних
+                var repairsList = db.Repairs.ToList();
+                dgRepairs.ItemsSource = repairsList;
+            }
         }
     }
 }

@@ -19,7 +19,28 @@
         <!-- Головне робоче середовище (Вкладки) -->
         <TabControl Grid.Row="1" Margin="10">
             <TabItem Header="Ремонти (СЦ)">
-                <TextBlock Text="Тут буде управління ремонтами, статусами та чергою" Margin="20" FontSize="16"/>
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель дій -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Оновити список" Width="120" Height="30" Click="LoadRepairs_Click"/>
+                    </StackPanel>
+
+                    <!-- Таблиця для виведення ремонтів -->
+                    <DataGrid x:Name="dgRepairs" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding RepairId}" Width="50"/>
+                            <DataGridTextColumn Header="Номер квитанції" Binding="{Binding RepairNumber}" Width="130"/>
+                            <DataGridTextColumn Header="Опис несправності" Binding="{Binding CustomerDescription}" Width="*"/>
+                            <DataGridTextColumn Header="Дата прийому" Binding="{Binding ReceivedAt}" Width="150"/>
+                            <DataGridTextColumn Header="Орієнтовна ціна" Binding="{Binding EstimatedPrice}" Width="120"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
             <TabItem Header="Магазин / Продажі">
                 <TextBlock Text="Тут буде каса, товари та оформлення продажів" Margin="20" FontSize="16"/>

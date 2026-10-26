@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Service_Store.Models;
 using ServiceCenterCRM.Models;
 
 namespace ServiceCenterCRM.Data
@@ -6,6 +7,7 @@ namespace ServiceCenterCRM.Data
     public class AppDbContext : DbContext
     {
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Repair> Repairs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
