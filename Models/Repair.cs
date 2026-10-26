@@ -14,6 +14,15 @@ namespace Service_Store.Models
         [Column("repair_number")]
         public string RepairNumber { get; set; } = string.Empty;
 
+        [Column("customer_id")]
+        public int CustomerId { get; set; } // Додано зв'язок з клієнтом
+
+        [Column("device_id")]
+        public int DeviceId { get; set; }   // Додано зв'язок з пристроєм
+
+        [Column("created_by")]
+        public int CreatedBy { get; set; }  // Додано зв'язок з працівником
+
         [Column("status_id")]
         public int StatusId { get; set; }
 

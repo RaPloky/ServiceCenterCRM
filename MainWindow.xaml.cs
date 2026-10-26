@@ -1,4 +1,5 @@
-﻿using ServiceCenterCRM.Data;
+﻿using Service_Store;
+using ServiceCenterCRM.Data;
 using ServiceCenterCRM.Models;
 using System.Windows;
 
@@ -40,6 +41,17 @@ namespace ServiceCenterCRM
                 // Завантажуємо список ремонтів із бази даних
                 var repairsList = db.Repairs.ToList();
                 dgRepairs.ItemsSource = repairsList;
+            }
+        }
+
+        private void AddRepair_Click(object sender, RoutedEventArgs e)
+        {
+            // Відкриваємо вікно створення ремонту, передаючи ID поточного працівника
+            AddRepairWindow addWindow = new AddRepairWindow(_currentEmployee.EmployeeId);
+            if (addWindow.ShowDialog() == true)
+            {
+                // Якщо ремонт успішно збережено, оновлюємо таблицю
+                LoadRepairs_Click(sender, e);
             }
         }
     }

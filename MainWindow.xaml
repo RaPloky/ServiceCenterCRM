@@ -27,8 +27,13 @@
 
                     <!-- Панель дій -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Оновити список" Width="120" Height="30" Margin="0,0,10,0" Click="LoadRepairs_Click"/>
+                        <Button Content="+ Новий ремонт" Width="130" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddRepair_Click"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити список" Width="120" Height="30" Click="LoadRepairs_Click"/>
                     </StackPanel>
+                    
 
                     <!-- Таблиця для виведення ремонтів -->
                     <DataGrid x:Name="dgRepairs" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
