@@ -76,7 +76,30 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Склад">
-                <TextBlock Text="Тут буде облік залишків товарів та запчастин" Margin="20" FontSize="16"/>
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель дій складу -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Оновити залишки" Width="140" Height="30" Margin="0,0,10,0" Click="LoadWarehouse_Click"/>
+                    </StackPanel>
+
+                    <!-- Таблиця залишків -->
+                    <DataGrid x:Name="dgWarehouse" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding StockId}" Width="40"/>
+                            <DataGridTextColumn Header="Склад" Binding="{Binding WarehouseId}" Width="60"/>
+                            <DataGridTextColumn Header="Назва товару" Binding="{Binding Product.Name}" Width="*"/>
+                            <DataGridTextColumn Header="SKU" Binding="{Binding Product.Sku}" Width="120"/>
+                            <DataGridTextColumn Header="Кількість" Binding="{Binding Quantity}" Width="80"/>
+                            <DataGridTextColumn Header="У резерві" Binding="{Binding ReservedQuantity}" Width="80"/>
+                            <DataGridTextColumn Header="Мінімум" Binding="{Binding MinimumQuantity}" Width="80"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
             <!-- Вкладка адміністратора, яку ми будемо ховати для звичайних ролей -->
             <TabItem x:Name="tabAdmin" Header="Адміністрування">

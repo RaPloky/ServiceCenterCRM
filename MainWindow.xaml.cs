@@ -1,4 +1,5 @@
-﻿using Service_Center.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Service_Center.Data;
 using Service_Center.Models;
 using Service_Store;
 using Service_Store.Models;
@@ -104,6 +105,18 @@ namespace Service_Center
             }
 
             MessageBox.Show($"Успішно оформлено продаж товару: {selectedProduct.Name} на суму {selectedProduct.SalePrice} грн!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void LoadWarehouse_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                var stockList = db.WarehouseStocks
+                    .Include(w => w.Product) // Підтягуємо зв'язаний товар за зовнішнім ключем
+                    .ToList();
+
+                dgWarehouse.ItemsSource = stockList;
+            }
         }
     }
 }
