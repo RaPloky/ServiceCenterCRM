@@ -48,7 +48,28 @@
                 </Grid>
             </TabItem>
             <TabItem Header="Магазин / Продажі">
-                <TextBlock Text="Тут буде каса, товари та оформлення продажів" Margin="20" FontSize="16"/>
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Панель дій магазину -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="Оновити каталог" Width="130" Height="30" Margin="0,0,10,0" Click="LoadProducts_Click"/>
+                    </StackPanel>
+
+                    <!-- Таблиця товарів -->
+                    <DataGrid x:Name="dgProducts" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ProductId}" Width="50"/>
+                            <DataGridTextColumn Header="Артикул (SKU)" Binding="{Binding Sku}" Width="130"/>
+                            <DataGridTextColumn Header="Назва товару" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Ціна (грн)" Binding="{Binding SalePrice}" Width="120"/>
+                            <DataGridTextColumn Header="Гарантія (міс.)" Binding="{Binding WarrantyMonths}" Width="110"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
             </TabItem>
             <TabItem Header="Склад">
                 <TextBlock Text="Тут буде облік залишків товарів та запчастин" Margin="20" FontSize="16"/>

@@ -54,5 +54,14 @@ namespace Service_Center
                 LoadRepairs_Click(sender, e);
             }
         }
+
+        private void LoadProducts_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                var productsList = db.Products.ToList();
+                dgProducts.ItemsSource = productsList;
+            }
+        }
     }
 }
