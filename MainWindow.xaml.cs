@@ -26,6 +26,7 @@ namespace Service_Center
                 tabAdmin.Visibility = Visibility.Collapsed;
             }
             LoadRepairs_Click(null, null);
+            LoadDashboard_Click(null, null);
         }
 
         private void Logout_Click(object sender, RoutedEventArgs e)
@@ -240,6 +241,29 @@ namespace Service_Center
             if (salaryWindow.ShowDialog() == true)
             {
                 LoadSalaries_Click(sender, e);
+            }
+        }
+
+        private void LoadDashboard_Click(object sender, RoutedEventArgs e)
+        {
+            using (var db = new AppDbContext())
+            {
+                // 1. Рахуємо загальну суму всіх продажів
+                decimal totalSales = db.Sales.Sum(s => (decimal?)s.TotalAmount) ?? 0;
+                txtTotalSales.Text = $"{totalSales:N2} грн";
+
+                // 2. Рахуємо загальну кількість ремонтів
+                int repairsCount = db.Repairs.Count();
+                txtActiveRepairs.Text = repairsCount.ToString();
+
+                // 3. Знаходимо товари з критичним залишком (менше або дорівнює 3)
+                var lowStockItems = db.WarehouseStocks
+                    .Include(w => w.Product)
+                    .Where(w => w.Quantity <= 3)
+                    .ToList();
+
+                txtLowStock.Text = lowStockItems.Count.ToString();
+                dgLowStock.ItemsSource = lowStockItems;
             }
         }
     }

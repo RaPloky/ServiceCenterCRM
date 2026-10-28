@@ -18,6 +18,59 @@
 
         <!-- Головне робоче середовище (Вкладки) -->
         <TabControl Grid.Row="1" Margin="10">
+            <TabItem Header="Дашборд">
+                <Grid Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Верхня панель з KPI картками -->
+                    <UniformGrid Grid.Row="0" Columns="3" Margin="0,0,0,15">
+                        <!-- Картка 1: Загальні продажі -->
+                        <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="5" Padding="15" Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="Загальна сума продажів" Foreground="#6C757D" FontSize="14"/>
+                                <TextBlock x:Name="txtTotalSales" Text="0.00 грн" FontSize="22" FontWeight="Bold" Foreground="#28A745" Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Картка 2: Активні ремонти -->
+                        <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="5" Padding="15" Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="Усього ремонтів" Foreground="#6C757D" FontSize="14"/>
+                                <TextBlock x:Name="txtActiveRepairs" Text="0" FontSize="22" FontWeight="Bold" Foreground="#007BFF" Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Картка 3: Дефіцит на складі -->
+                        <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="5" Padding="15" Margin="5">
+                            <StackPanel>
+                                <TextBlock Text="Товарів мало на складі" Foreground="#6C757D" FontSize="14"/>
+                                <TextBlock x:Name="txtLowStock" Text="0" FontSize="22" FontWeight="Bold" Foreground="#DC3545" Margin="0,5,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <!-- Кнопка оновлення даних -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,0,5,10">
+                        <Button Content="Оновити дашборд" Width="140" Height="30" Click="LoadDashboard_Click"/>
+                    </StackPanel>
+
+                    <!-- Таблиця сповіщень: товари, які закінчуються (менше або дорівнює 3 одиницям) -->
+                    <GroupBox Grid.Row="2" Header="Увага: товари на вичерпанні (залишок &lt;= 3)" Margin="5" Padding="5">
+                        <DataGrid x:Name="dgLowStock" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Товар" Binding="{Binding Product.Name}" Width="220"/>
+                                <DataGridTextColumn Header="SKU" Binding="{Binding Product.Sku}" Width="130"/>
+                                <DataGridTextColumn Header="Залишок" Binding="{Binding Quantity}" Width="100"/>
+                                <DataGridTextColumn Header="Розташування" Binding="{Binding Location}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </GroupBox>
+                </Grid>
+            </TabItem>
             <TabItem Header="Ремонти (СЦ)">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
