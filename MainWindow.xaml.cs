@@ -4,6 +4,7 @@ using Service_Center.Models;
 using Service_Store;
 using Service_Store.Models;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Service_Center
 {
@@ -264,6 +265,55 @@ namespace Service_Center
 
                 txtLowStock.Text = lowStockItems.Count.ToString();
                 dgLowStock.ItemsSource = lowStockItems;
+            }
+        }
+
+        private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Захист, щоб подія не спрацьовувала при виборі підвкладок всередині самих вкладок
+            if (e.Source is TabControl tabControl && tabControl == mainTabControl)
+            {
+                // Перевіряємо, яка саме вкладка вибрана за її заголовком (Header)
+                if (tabControl.SelectedItem is TabItem selectedTab)
+                {
+                    string header = selectedTab.Header?.ToString();
+
+                    // Викликаємо відповідний метод завантаження залежно від активної вкладки
+                    if (header == "Дашборд")
+                    {
+                        LoadDashboard_Click(null, null);
+                    }
+                    else if (header == "Ремонти (СЦ)")
+                    {
+                        LoadRepairs_Click(null, null);
+                    }
+                    else if (header == "Продажі" || header == "Магазин / Продажі")
+                    {
+                        LoadSales_Click(null, null);
+                        LoadProducts_Click(null, null); // Оновлюємо і каталог товарів на випадок змін
+                    }
+                    else if (header == "Клієнти")
+                    {
+                        LoadCustomers_Click(null, null);
+                    }
+                    else if (header == "Склад")
+                    {
+                        LoadWarehouse_Click(null, null);
+                    }
+                    else if (header == "Пристрої клієнтів")
+                    {
+                        LoadDevices_Click(null, null);
+                    }
+                    else if (header == "Постачальники")
+                    {
+                        LoadSuppliersList_Click(null, null);
+                        LoadSuppliers_Click(null, null);
+                    }
+                    else if (header == "Адміністрування")
+                    {
+                        LoadSalaries_Click(null, null);
+                    }
+                }
             }
         }
     }

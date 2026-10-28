@@ -17,7 +17,7 @@
         </Border>
 
         <!-- Головне робоче середовище (Вкладки) -->
-        <TabControl Grid.Row="1" Margin="10">
+        <TabControl Grid.Row="1" Margin="10" x:Name="mainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
             <TabItem Header="Дашборд">
                 <Grid Margin="15">
                     <Grid.RowDefinitions>
