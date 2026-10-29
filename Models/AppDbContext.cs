@@ -19,10 +19,10 @@ namespace Service_Center.Data
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<SupplierProduct> SupplierProducts { get; set; }
         public DbSet<SalaryRecord> SalaryRecords { get; set; }
+        public DbSet<BonusTransaction> BonusTransactions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            // Заміни рядок підключення на свої дані (Server, Database, User ID, Password)
             string connectionString = "Server=localhost;Database=service_center_db;Uid=root;Pwd=;";
 
             optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));

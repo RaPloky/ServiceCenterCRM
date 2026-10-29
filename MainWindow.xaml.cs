@@ -85,7 +85,6 @@ namespace Service_Center
 
         private void CreateSale_Click(object sender, RoutedEventArgs e)
         {
-            // Отримуємо товар, який користувач виділив у таблиці
             var selectedProduct = dgProducts.SelectedItem as Service_Store.Models.Product;
 
             if (selectedProduct == null)
@@ -96,32 +95,60 @@ namespace Service_Center
 
             using (var db = new AppDbContext())
             {
+                // Візьмемо для прикладу клієнта з ID = 1 (або того, якого виберемо)
+                int customerId = 1;
+                var customer = db.Customers.Find(customerId);
+
+                decimal saleAmount = selectedProduct.SalePrice;
+                decimal bonusesEarned = saleAmount * 0.01m; // Нараховуємо 1% від суми покупки
+
                 // 1. Створюємо запис про продаж
                 var newSale = new Sale
                 {
-                    EmployeeId = _currentEmployee.EmployeeId, // Заточено під поточного залогіненого працівника
-                    CustomerId = 1, // Базовий клієнт для прикладу
+                    EmployeeId = _currentEmployee.EmployeeId,
+                    CustomerId = customerId,
                     SaleDate = DateTime.Now,
-                    TotalAmount = selectedProduct.SalePrice
+                    TotalAmount = saleAmount,
+                    BonusUsed = 0 // Поки без списання, у наступному кроці додамо діалог використання балів
                 };
 
                 db.Sales.Add(newSale);
-                db.SaveChanges(); // Зберігаємо, щоб отримати згенерований SaleId
+                db.SaveChanges(); // Зберігаємо, щоб отримати SaleId
 
-                // 2. Додаємо позицію до чек-листа продажу
+                // 2. Додаємо позицію до чека
                 var saleItem = new SaleItem
                 {
                     SaleId = newSale.SaleId,
                     ProductId = selectedProduct.ProductId,
                     Quantity = 1,
-                    UnitPrice = selectedProduct.SalePrice
+                    UnitPrice = saleAmount
                 };
-
                 db.SaleItems.Add(saleItem);
-                db.SaveChanges();
-            }
 
-            MessageBox.Show($"Успішно оформлено продаж товару: {selectedProduct.Name} на суму {selectedProduct.SalePrice} грн!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
+                // 3. Нараховуємо бонуси клієнту, якщо він існує
+                if (customer != null)
+                {
+                    customer.BonusBalance += bonusesEarned;
+
+                    // Записуємо транзакцію нарахування бонусів
+                    var bonusTransaction = new BonusTransaction
+                    {
+                        CustomerId = customerId,
+                        SaleId = newSale.SaleId,
+                        TransactionType = "earn",
+                        Amount = bonusesEarned,
+                        Description = $"Нарахування 1% за покупку №{newSale.SaleId}",
+                        CreatedAt = DateTime.Now
+                    };
+                    db.BonusTransactions.Add(bonusTransaction);
+                }
+
+                db.SaveChanges();
+
+                MessageBox.Show($"Продаж успішно оформлено!\nТовар: {selectedProduct.Name}\nНараховано бонусів: {bonusesEarned:N2} грн", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                LoadSales_Click(null, null);
+            }
         }
 
         private void LoadWarehouse_Click(object sender, RoutedEventArgs e)
