@@ -27,6 +27,7 @@ namespace Service_Store
             LoadRepairData();
             LoadRepairHistory(); // Завантажуємо історію при відкритті вікна
             LoadAttachments();
+            LoadRepairPartsData();
         }
 
         private void LoadAttachments()
@@ -288,6 +289,129 @@ namespace Service_Store
             // можна закоментувати рядок нижче, а закриття залишити на окрему кнопку:
             this.DialogResult = true;
             this.Close();
+        }
+
+        private void LoadRepairPartsData()
+        {
+            using (var db = new AppDbContext())
+            {
+                // Формуємо зручний список для випадаючого списку з урахуванням залишку
+                cbWarehouseProducts.ItemsSource = db.WarehouseStocks
+                    .Include(w => w.Product)
+                    .Where(w => w.Product != null && w.Quantity > 0)
+                    .Select(w => new
+                    {
+                        ProductId = w.ProductId,
+                        DisplayText = $"{w.Product.Name} (Залишок: {w.Quantity} шт. — {w.Product.SalePrice} грн)"
+                    })
+                    .ToList();
+
+                // Завантажуємо використані запчастини для поточного ремонту
+                var parts = db.RepairParts
+                    .Where(rp => rp.RepairId == _repairId)
+                    .Select(rp => new
+                    {
+                        rp.RepairPartId,
+                        rp.Name,
+                        rp.Quantity,
+                        rp.UnitPrice,
+                        TotalPrice = rp.Quantity * rp.UnitPrice
+                    })
+                    .ToList();
+
+                dgRepairParts.ItemsSource = parts;
+            }
+        }
+
+        private void AddRepairPart_Click(object sender, RoutedEventArgs e)
+        {
+            if (cbWarehouseProducts.SelectedValue == null)
+            {
+                MessageBox.Show("Оберіть товар/запчастину зі складу!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!int.TryParse(txtPartQuantity.Text, out int qty) || qty <= 0)
+            {
+                MessageBox.Show("Введіть коректну кількість!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            int productId = Convert.ToInt32(cbWarehouseProducts.SelectedValue);
+
+            using (var db = new AppDbContext())
+            {
+                // Перевіряємо залишок на складі
+                var stockItem = db.WarehouseStocks
+                    .Include(w => w.Product)
+                    .FirstOrDefault(w => w.ProductId == productId);
+
+                if (stockItem == null || stockItem.Quantity < qty)
+                {
+                    MessageBox.Show("На складі недостатньо цієї позиції!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var product = stockItem.Product;
+                if (product == null) return;
+
+                // Створюємо запис із назвою деталі
+                var repairPart = new RepairPart
+                {
+                    RepairId = _repairId,
+                    ProductId = productId,
+                    Name = product.Name, // Записуємо назву у нове поле
+                    Quantity = qty,
+                    UnitPrice = product.SalePrice
+                };
+
+                db.RepairParts.Add(repairPart);
+
+                // Зменшуємо залишок на складі
+                stockItem.Quantity -= qty;
+
+                db.SaveChanges();
+            }
+
+            LoadRepairPartsData();
+            txtPartQuantity.Text = "1";
+            MessageBox.Show("Запчастину успішно додано до ремонту, склад оновлено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void DeleteRepairPart_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgRepairParts.SelectedItem != null)
+            {
+                var selectedItem = dgRepairParts.SelectedItem;
+                int repairPartId = (int)selectedItem.GetType().GetProperty("RepairPartId").GetValue(selectedItem, null);
+
+                if (MessageBox.Show("Ви дійсно хочете видалити цей запис? (Кількість товару повернеться на склад)", "Підтвердження", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    using (var db = new AppDbContext())
+                    {
+                        var repairPart = db.RepairParts.Find(repairPartId);
+                        if (repairPart != null)
+                        {
+                            // Повертаємо кількість назад на склад
+                            var stockItem = db.WarehouseStocks.FirstOrDefault(w => w.ProductId == repairPart.ProductId);
+                            if (stockItem != null)
+                            {
+                                stockItem.Quantity += repairPart.Quantity;
+                            }
+
+                            db.RepairParts.Remove(repairPart);
+                            db.SaveChanges();
+                        }
+                    }
+
+                    LoadRepairPartsData();
+                    MessageBox.Show("Запис видалено, склад оновлено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Оберіть запчастину в таблиці для видалення!", "Увага", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
     }
 }
