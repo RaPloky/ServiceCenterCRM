@@ -229,10 +229,10 @@ namespace Service_Center
 
         private void AddSale_Click(object sender, RoutedEventArgs e)
         {
-            CreateSaleWindow saleWindow = new CreateSaleWindow();
+            BonusSaleWindow saleWindow = new BonusSaleWindow(_currentEmployee.EmployeeId);
             if (saleWindow.ShowDialog() == true)
             {
-                LoadSales_Click(sender, e);
+                LoadSales_Click(null, null);
             }
         }
 
