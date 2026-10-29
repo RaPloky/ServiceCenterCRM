@@ -18,7 +18,7 @@
 
         <!-- Головне робоче середовище (Вкладки) -->
         <TabControl Grid.Row="1" Margin="10" x:Name="mainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
-            <TabItem Header="Дашборд">
+            <TabItem Header="Дашборд" x:Name="tabDashboard">
                 <Grid Margin="15">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -71,7 +71,7 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <TabItem Header="Ремонти (СЦ)">
+            <TabItem Header="Ремонти (СЦ)" x:Name="tabRepairs">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -105,7 +105,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Продажі">
+            <TabItem Header="Продажі" x:Name="tabSales">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -127,7 +127,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Магазин / Продажі">
+            <TabItem Header="Магазин / Продажі" x:Name="tabStore">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -155,7 +155,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Клієнти">
+            <TabItem Header="Клієнти" x:Name="tabCustomers">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -184,7 +184,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Склад">
+            <TabItem Header="Склад" x:Name="tabWarehouse">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -210,7 +210,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Пристрої клієнтів">
+            <TabItem Header="Пристрої клієнтів" x:Name="tabDevices">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -239,7 +239,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Постачальники">
+            <TabItem Header="Постачальники" x:Name="tabSuppliers">
                 <TabControl Margin="5">
                     <!-- Підвкладка 1: Компанії-постачальники -->
                     <TabItem Header="Компанії">

@@ -20,13 +20,28 @@ namespace Service_Center
             // Виводимо інформацію про поточного працівника у шапку
             txtUserInfo.Text = $"Працівник: {employee.FirstName} {employee.LastName} (Посада ID: {employee.PositionId})";
 
-            // Приклад реалізації розмежування доступу (RBAC):
-            // Якщо посада не Адміністратор (наприклад, PositionId != 1), приховуємо вкладку адміністрування
-            if (employee.PositionId != 1)
+            // Ролеве розмежування доступу (RBAC):
+            if (employee.PositionId == 2) // Продавець-консультант
+            {
+                // Ховаємо ремонтні та адмін-вкладки
+                tabRepairs.Visibility = Visibility.Collapsed;
+                tabDevices.Visibility = Visibility.Collapsed;
+                tabSuppliers.Visibility = Visibility.Collapsed;
+                tabAdmin.Visibility = Visibility.Collapsed;
+            }
+            else if (employee.PositionId == 3) // Інженер сервісного центру
+            {
+                // Ховаємо продажі, магазин та постачальників/адмін
+                tabSales.Visibility = Visibility.Collapsed;
+                tabStore.Visibility = Visibility.Collapsed;
+                tabSuppliers.Visibility = Visibility.Collapsed;
+                tabAdmin.Visibility = Visibility.Collapsed;
+            }
+            else if (employee.PositionId != 1) // Будь-яка інша / невідома посада
             {
                 tabAdmin.Visibility = Visibility.Collapsed;
             }
-            LoadRepairs_Click(null, null);
+
             LoadDashboard_Click(null, null);
         }
 
