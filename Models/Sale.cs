@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Service_Center.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,7 +16,7 @@ namespace Service_Store.Models
         public string SaleNumber { get; set; } = string.Empty;
 
         [Column("customer_id")]
-        public int? CustomerId { get; set; }
+        public int CustomerId { get; set; }
 
         [Column("employee_id")]
         public int EmployeeId { get; set; }
@@ -28,5 +29,11 @@ namespace Service_Store.Models
 
         [Column("total_amount")]
         public decimal TotalAmount { get; set; }
+
+        [ForeignKey("CustomerId")]
+        public virtual Customer Customer { get; set; }
+
+        [ForeignKey("EmployeeId")]
+        public virtual Employee Employee { get; set; }
     }
 }

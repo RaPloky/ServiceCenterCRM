@@ -43,6 +43,14 @@ namespace Service_Store
                 return;
             }
 
+            if (cbCustomers.SelectedValue == null)
+            {
+                MessageBox.Show("Оберіть клієнта для оформлення продажу!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            int customerId = Convert.ToInt32(cbCustomers.SelectedValue);
+
             var selectedStock = cbProducts.SelectedItem as WarehouseStock;
             if (selectedStock == null) return;
 
@@ -52,7 +60,6 @@ namespace Service_Store
                 return;
             }
 
-            int? customerId = cbCustomers.SelectedValue as int?;
             string paymentMethod = (cbPaymentMethod.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "CASH";
             decimal unitPrice = selectedStock.Product.SalePrice;
             decimal totalAmount = unitPrice * qty;

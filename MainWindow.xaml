@@ -117,12 +117,14 @@
                         <Button Content="+ Новий продаж" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddSale_Click"/>
                     </StackPanel>
 
-                    <DataGrid x:Name="dgSales" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                    <DataGrid x:Name="dgSales" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding SaleId}" Width="40"/>
-                            <DataGridTextColumn Header="Номер чеку" Binding="{Binding SaleNumber}" Width="130"/>
-                            <DataGridTextColumn Header="Дата" Binding="{Binding SaleDate}" Width="140"/>
-                            <DataGridTextColumn Header="Сума (грн)" Binding="{Binding TotalAmount}" Width="100"/>
+                            <DataGridTextColumn Header="Номер чека" Binding="{Binding SaleNumber}" Width="130"/>
+                            <DataGridTextColumn Header="Дата" Binding="{Binding SaleDate, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="140"/>
+                            <DataGridTextColumn Header="Клієнт" Binding="{Binding Customer.LastName}" Width="150"/>
+                            <DataGridTextColumn Header="Використано бонусів" Binding="{Binding BonusUsed}" Width="130"/>
+                            <DataGridTextColumn Header="Сума (грн)" Binding="{Binding TotalAmount}" Width="110"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </Grid>

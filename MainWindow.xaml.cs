@@ -223,7 +223,11 @@ namespace Service_Center
         {
             using (var db = new AppDbContext())
             {
-                dgSales.ItemsSource = db.Sales.OrderByDescending(s => s.SaleDate).ToList();
+                dgSales.ItemsSource = db.Sales
+                    .Include(s => s.Customer)     // Підтягуємо дані клієнта
+                    .Include(s => s.Employee)     // Підтягуємо дані працівника
+                    .OrderByDescending(s => s.SaleDate)
+                    .ToList();
             }
         }
 
