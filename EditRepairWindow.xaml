@@ -27,6 +27,20 @@
                 <TextBlock Text="Опис проблеми (від клієнта):" FontWeight="SemiBold" Margin="0,0,0,5"/>
                 <TextBox x:Name="txtCustomerDescription" Height="50" AcceptsReturn="True" TextWrapping="Wrap" Padding="5" Margin="0,0,0,10"/>
 
+                <!-- Секція вкладень (фото та акти) -->
+                <GroupBox Header="Фотографії та акти пристрою" Margin="0,15,0,10" Padding="10">
+                    <StackPanel>
+                        <ListBox x:Name="lstAttachments" Height="90" Margin="0,0,0,10" 
+                 DisplayMemberPath="FilePath" 
+                 MouseDoubleClick="LstAttachments_MouseDoubleClick"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Додати фото/файл" Width="130" Height="30" Background="#17A2B8" Foreground="White" FontWeight="Bold" Click="AddAttachment_Click" Margin="0,0,10,0"/>
+                            <Button Content="Видалити обране" Width="130" Height="30" Background="#DC3545" Foreground="White" FontWeight="Bold" Click="DeleteAttachment_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
                 <!-- Внутрішні нотатки майстра -->
                 <TextBlock Text="Внутрішні нотатки майстра:" FontWeight="SemiBold" Margin="0,0,0,5"/>
                 <TextBox x:Name="txtInternalNotes" Height="50" AcceptsReturn="True" TextWrapping="Wrap" Padding="5" Margin="0,0,0,10"/>

@@ -22,6 +22,7 @@ namespace Service_Center.Data
         public DbSet<BonusTransaction> BonusTransactions { get; set; }
         public DbSet<RepairStatusHistory> RepairStatusHistories { get; set; }
         public DbSet<EmployeeShift> EmployeeShifts { get; set; }
+        public DbSet<RepairAttachment> RepairAttachments { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

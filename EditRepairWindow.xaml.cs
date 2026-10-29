@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 using Service_Center.Data;
 using Service_Center.Models;
 using Service_Store.Models;
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -23,6 +26,118 @@ namespace Service_Store
             LoadEmployees();
             LoadRepairData();
             LoadRepairHistory(); // Завантажуємо історію при відкритті вікна
+            LoadAttachments();
+        }
+
+        private void LoadAttachments()
+        {
+            using (var db = new AppDbContext())
+            {
+                var attachments = db.RepairAttachments
+                    .Where(a => a.RepairId == _repairId)
+                    .ToList();
+
+                lstAttachments.ItemsSource = attachments;
+            }
+        }
+
+        private void AddAttachment_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Title = "Оберіть файл (фото або акт)",
+                Filter = "Усі файли (*.*)|*.*"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string sourceFilePath = openFileDialog.FileName;
+                string uploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Uploads");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                string fileName = $"{Guid.NewGuid()}_{Path.GetFileName(sourceFilePath)}";
+                string destinationFilePath = Path.Combine(uploadsFolder, fileName);
+
+                File.Copy(sourceFilePath, destinationFilePath);
+
+                using (var db = new AppDbContext())
+                {
+                    var attachment = new RepairAttachment
+                    {
+                        RepairId = _repairId,
+                        FilePath = $"Uploads/{fileName}",
+                        Description = Path.GetFileName(sourceFilePath),
+                        UploadedBy = _currentEmployee != null ? _currentEmployee.EmployeeId : 1,
+                        CreatedAt = DateTime.Now
+                    };
+
+                    db.RepairAttachments.Add(attachment);
+                    db.SaveChanges();
+                }
+
+                LoadAttachments();
+                MessageBox.Show("Файл успішно додано до ремонту!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void DeleteAttachment_Click(object sender, RoutedEventArgs e)
+        {
+            if (lstAttachments.SelectedItem is RepairAttachment selectedAttachment)
+            {
+                if (MessageBox.Show("Ви впевнені, що хочете видалити цей файл?", "Підтвердження", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                {
+                    using (var db = new AppDbContext())
+                    {
+                        var dbAttachment = db.RepairAttachments.Find(selectedAttachment.AttachmentId);
+                        if (dbAttachment != null)
+                        {
+                            string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, dbAttachment.FilePath);
+                            if (File.Exists(fullPath))
+                            {
+                                File.Delete(fullPath);
+                            }
+
+                            db.RepairAttachments.Remove(dbAttachment);
+                            db.SaveChanges();
+                        }
+                    }
+
+                    LoadAttachments();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Оберіть файл зі списку для видалення!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void LstAttachments_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (lstAttachments.SelectedItem is RepairAttachment selectedAttachment)
+            {
+                string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, selectedAttachment.FilePath);
+
+                if (File.Exists(fullPath))
+                {
+                    try
+                    {
+                        // Запускаємо файл у системній програмі за замовчуванням
+                        Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Не вдалося відкрити файл: {ex.Message}", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Файл не знайдено на дискy за вказаним шляхом!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
         }
 
         private void LoadStatuses()
