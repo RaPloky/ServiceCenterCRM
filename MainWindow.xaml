@@ -308,6 +308,7 @@
                             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                 <Button Content="Оновити історію" Width="140" Height="30" Margin="0,0,10,0" Click="LoadSalaries_Click"/>
                                 <Button Content="+ Виплата зарплати" Width="160" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddSalary_Click"/>
+                                <Button Content="Графік роботи" Width="130" Height="30" Margin="5,0,0,0" Click="OpenShifts_Click"/>
                             </StackPanel>
 
                             <DataGrid x:Name="dgSalaries" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
@@ -322,8 +323,6 @@
                             </DataGrid>
                         </Grid>
                     </TabItem>
-
-                    <!-- Сюди в майбутньому можна буде легко додати інші підвкладки, наприклад: Працівники, Логи, Налаштування тощо -->
                 </TabControl>
             </TabItem>
         </TabControl>

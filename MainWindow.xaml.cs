@@ -362,5 +362,11 @@ namespace Service_Center
                 }
             }
         }
+
+        private void OpenShifts_Click(object sender, RoutedEventArgs e)
+        {
+            EmployeeShiftsWindow shiftsWindow = new EmployeeShiftsWindow(_currentEmployee);
+            shiftsWindow.ShowDialog();
+        }
     }
 }
