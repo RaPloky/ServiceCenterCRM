@@ -112,12 +112,13 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
+                    <!-- Виправлена панель дій з обома кнопками -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити історію" Width="140" Height="30" Margin="0,0,10,0" Click="LoadSales_Click"/>
                         <Button Content="+ Новий продаж" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddSale_Click"/>
                     </StackPanel>
 
-                    <DataGrid x:Name="dgSales" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                    <DataGrid x:Name="dgSales" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding SaleId}" Width="40"/>
                             <DataGridTextColumn Header="Номер чека" Binding="{Binding SaleNumber}" Width="130"/>
@@ -221,11 +222,9 @@
 
                     <!-- Панель дій -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button Content="Оновити список" Width="140" Height="30" Click="LoadDevices_Click"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити список" Width="140" Height="30" Margin="0,0,10,0" Click="LoadDevices_Click"/>
-                        <Button Content="+ Новий пристрій" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddDevice_Click"/>
+                        <Button Content="+ Новий пристрій" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" Click="AddDevice_Click"/>
+                        <Button Content="Видалити обране" Width="140" Height="30" Background="#DC3545" Foreground="White" FontWeight="Bold" Click="DeleteDevice_Click"/>
                     </StackPanel>
 
                     <!-- Таблиця пристроїв -->

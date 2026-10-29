@@ -368,5 +368,68 @@ namespace Service_Center
             EmployeeShiftsWindow shiftsWindow = new EmployeeShiftsWindow(_currentEmployee);
             shiftsWindow.ShowDialog();
         }
+
+        private void DeleteDevice_Click(object sender, RoutedEventArgs e)
+        {
+            // Отримуємо обраний пристрій із таблиці (DataGrid)
+            // Зверни увагу: тип об'єкта залежить від того, як ти заповнюєш dgDevices (може бути анонімний тип або модель CustomerDevice)
+            if (dgDevices.SelectedItem != null)
+            {
+                // Отримуємо ID пристрою через динамічне приведення або властивість моделі
+                int deviceId = 0;
+                string deviceName = "";
+
+                if (dgDevices.SelectedItem is CustomerDevice device)
+                {
+                    deviceId = device.DeviceId;
+                    deviceName = $"{device.Brand} {device.Model}";
+                }
+                else
+                {
+                    // Якщо використовується анонімний тип у завантаженні (Select)
+                    var selectedItem = dgDevices.SelectedItem;
+                    deviceId = (int)selectedItem.GetType().GetProperty("DeviceId").GetValue(selectedItem, null);
+                    deviceName = $"{selectedItem.GetType().GetProperty("Brand").GetValue(selectedItem, null)} {selectedItem.GetType().GetProperty("Model").GetValue(selectedItem, null)}";
+                }
+
+                using (var db = new AppDbContext())
+                {
+                    // 1. Перевіряємо, чи є ремонти, пов'язані з цим пристроєм
+                    bool hasRepairs = db.Repairs.Any(r => r.DeviceId == deviceId);
+
+                    if (hasRepairs)
+                    {
+                        // Якщо ремонти є — виводимо попередження
+                        MessageBox.Show("Цей пристрій наявний в історіях ремонту і не може бути видалений!",
+                            "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+
+                    // 2. Якщо ремонтів немає — виводимо діалогове вікно підтвердження
+                    MessageBoxResult result = MessageBox.Show($"Ви дійсно хочете видалити пристрій: {deviceName}?",
+                        "Підтвердження видалення", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        var deviceToDelete = db.CustomerDevices.Find(deviceId);
+                        if (deviceToDelete != null)
+                        {
+                            db.CustomerDevices.Remove(deviceToDelete);
+                            db.SaveChanges();
+                        }
+
+                        // Оновлюємо таблицю пристроїв на екрані
+                        // Викликаємо твій існуючий метод завантаження (наприклад, LoadDevices_Click або аналогічний)
+                        LoadDevices_Click(sender, e);
+
+                        MessageBox.Show("Пристрій успішно видалено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Будь ласка, оберіть пристрій у таблиці для видалення!", "Увага", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
     }
 }
