@@ -20,6 +20,7 @@ namespace Service_Center.Data
         public DbSet<SupplierProduct> SupplierProducts { get; set; }
         public DbSet<SalaryRecord> SalaryRecords { get; set; }
         public DbSet<BonusTransaction> BonusTransactions { get; set; }
+        public DbSet<RepairStatusHistory> RepairStatusHistories { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

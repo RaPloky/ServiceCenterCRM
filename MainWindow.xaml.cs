@@ -212,7 +212,7 @@ namespace Service_Center
                 return;
             }
 
-            EditRepairWindow editWindow = new EditRepairWindow(selectedRepair.RepairId);
+            EditRepairWindow editWindow = new EditRepairWindow(selectedRepair.RepairId, _currentEmployee);
             if (editWindow.ShowDialog() == true)
             {
                 LoadRepairs_Click(sender, e);

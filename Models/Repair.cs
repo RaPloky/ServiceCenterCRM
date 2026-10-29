@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Service_Center.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -42,6 +43,25 @@ namespace Service_Store.Models
         public decimal? FinalPrice { get; set; }
 
         [Column("received_at")]
-        public DateTime ReceivedAt { get; set; }
+        public DateTime ReceivedAt { get; set; } = DateTime.Now;
+
+        [Column("estimated_completion_date")]
+        public DateTime? EstimatedCompletionDate { get; set; }
+
+        [Column("completed_at")]
+        public DateTime? CompletedAt { get; set; }
+
+        [Column("issued_at")]
+        public DateTime? IssuedAt { get; set; }
+
+        // Навігаційні властивості за необхідності
+        [ForeignKey("CustomerId")]
+        public virtual Customer Customer { get; set; }
+
+        [ForeignKey("StatusId")]
+        public virtual RepairStatus RepairStatus { get; set; }
+
+        [ForeignKey("AssignedEmployeeId")]
+        public virtual Employee AssignedEmployee { get; set; }
     }
 }
