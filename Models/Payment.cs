@@ -15,12 +15,16 @@ namespace Service_Store.Models
         public int SaleId { get; set; }
 
         [Column("payment_method")]
-        public string PaymentMethod { get; set; } = string.Empty;
+        public string PaymentMethod { get; set; } = string.Empty; // CASH, CARD, BONUS
 
         [Column("amount")]
         public decimal Amount { get; set; }
 
         [Column("created_at")]
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // Навігаційна властивість
+        [ForeignKey("SaleId")]
+        public virtual Sale Sale { get; set; }
     }
 }

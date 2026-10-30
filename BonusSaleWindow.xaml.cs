@@ -92,11 +92,12 @@ namespace Service_Store
             bonusToSpend = Math.Min(bonusToSpend, selectedProduct.SalePrice);
 
             decimal finalAmount = selectedProduct.SalePrice - bonusToSpend;
-            decimal bonusesEarned = finalAmount * 0.01m; //
+            decimal bonusesEarned = finalAmount * 0.01m;
 
             using (var db = new AppDbContext())
             {
                 var dbCustomer = db.Customers.Find(selectedCustomer.CustomerId);
+                if (dbCustomer == null) return;
 
                 // 1. Створюємо запис про продаж
                 var sale = new Sale
@@ -106,10 +107,10 @@ namespace Service_Store
                     SaleDate = DateTime.Now,
                     TotalAmount = finalAmount,
                     BonusUsed = bonusToSpend,
-                    SaleNumber = "POS-" + DateTime.Now.ToString("yyyyMMddHHmmssfff") // Генерація унікального номера чека
+                    SaleNumber = "POS-" + DateTime.Now.ToString("yyyyMMddHHmmssfff")
                 };
                 db.Sales.Add(sale);
-                db.SaveChanges();
+                db.SaveChanges(); // Зберігаємо, щоб отримати sale.SaleId
 
                 // 2. Додаємо позицію чека
                 var saleItem = new SaleItem
@@ -156,11 +157,20 @@ namespace Service_Store
                 }
 
                 db.SaveChanges();
-            }
 
-            MessageBox.Show("Продаж успішно оформлено та бонуси оновлено!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
-            this.DialogResult = true;
-            this.Close();
+                // 5. Виклик вікна розподілу оплат (SplitPaymentWindow)
+                SplitPaymentWindow splitWindow = new SplitPaymentWindow(sale.SaleId, sale.TotalAmount, dbCustomer.CustomerId);
+                if (splitWindow.ShowDialog() == true)
+                {
+                    MessageBox.Show("Продаж успішно оформлено та оплачено!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
+                    this.DialogResult = true;
+                    this.Close();
+                }
+                else
+                {
+                    // Якщо касир закрив вікно оплати без підтвердження
+                }
+            }
         }
     }
 }
