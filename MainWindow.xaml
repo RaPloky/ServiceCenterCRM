@@ -80,16 +80,11 @@
 
                     <!-- Панель дій -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button Content="Оновити список" Width="120" Height="30" Margin="0,0,10,0" Click="LoadRepairs_Click"/>
-                        <Button Content="+ Новий ремонт" Width="130" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddRepair_Click"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button Content="Оновити список" Width="120" Height="30" Click="LoadRepairs_Click"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити список" Width="130" Height="30" Margin="0,0,10,0" Click="LoadRepairs_Click"/>
                         <Button Content="+ Новий ремонт" Width="130" Height="30" Margin="0,0,10,0" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddRepair_Click"/>
                         <Button Content="Редагувати / Статус" Width="150" Height="30" Background="#007ACC" Foreground="White" FontWeight="Bold" Click="EditRepair_Click"/>
+                        <TextBlock Text="Пошук за квитанцією:" VerticalAlignment="Center" Margin="15,0,5,0"/>
+                        <TextBox x:Name="txtRepairSearch" Width="150" Height="30" VerticalContentAlignment="Center" Padding="5" ToolTip="REP-XXXX" TextChanged="RepairSearch_TextChanged"/>
                     </StackPanel>
 
 
@@ -117,6 +112,8 @@
                         <Button Content="Оновити історію" Width="140" Height="30" Margin="0,0,10,0" Click="LoadSales_Click"/>
                         <Button Content="+ Новий продаж" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddSale_Click"/>
                         <Button Content="🖨 Друк чека" Width="130" Height="30" Background="#17A2B8" Foreground="White" FontWeight="Bold" Click="PrintReceipt_Click"/>
+                        <TextBlock Text="Пошук за прізвищем:" VerticalAlignment="Center" Margin="15,0,5,0"/>
+                        <TextBox x:Name="txtSalesCustomerSearch" Width="150" Height="30" VerticalContentAlignment="Center" Padding="5" TextChanged="SalesCustomerSearch_TextChanged"/>
                     </StackPanel>
 
                     <DataGrid x:Name="dgSales" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
@@ -131,34 +128,7 @@
                     </DataGrid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Магазин / Продажі" x:Name="tabStore">
-                <Grid Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Панель дій магазину -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button Content="Оновити каталог" Width="130" Height="30" Margin="0,0,10,0" Click="LoadProducts_Click"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button Content="Оновити каталог" Width="130" Height="30" Margin="0,0,10,0" Click="LoadProducts_Click"/>
-                        <Button Content="Продати обраний товар" Width="160" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="CreateSale_Click"/>
-                    </StackPanel>
-
-                    <!-- Таблиця товарів -->
-                    <DataGrid x:Name="dgProducts" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding ProductId}" Width="50"/>
-                            <DataGridTextColumn Header="Артикул (SKU)" Binding="{Binding Sku}" Width="130"/>
-                            <DataGridTextColumn Header="Назва товару" Binding="{Binding Name}" Width="*"/>
-                            <DataGridTextColumn Header="Ціна (грн)" Binding="{Binding SalePrice}" Width="120"/>
-                            <DataGridTextColumn Header="Гарантія (міс.)" Binding="{Binding WarrantyMonths}" Width="110"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
-            </TabItem>
+            
             <TabItem Header="Клієнти" x:Name="tabCustomers">
                 <Grid Margin="10">
                     <Grid.RowDefinitions>
@@ -169,10 +139,9 @@
                     <!-- Панель дій -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити список" Width="130" Height="30" Margin="0,0,10,0" Click="LoadCustomers_Click"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                        <Button Content="Оновити список" Width="130" Height="30" Margin="0,0,10,0" Click="LoadCustomers_Click"/>
                         <Button Content="+ Новий клієнт" Width="130" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddCustomer_Click"/>
+                        <TextBlock Text="Пошук за прізвищем:" VerticalAlignment="Center" Margin="15,0,5,0"/>
+                        <TextBox x:Name="txtCustomerSearch" Width="150" Height="30" VerticalContentAlignment="Center" Padding="5" TextChanged="CustomerSearch_TextChanged"/>
                     </StackPanel>
 
                     <!-- Таблиця клієнтів -->
@@ -226,6 +195,8 @@
                         <Button Content="Оновити список" Width="140" Height="30" Margin="0,0,10,0" Click="LoadDevices_Click"/>
                         <Button Content="+ Новий пристрій" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" Click="AddDevice_Click"/>
                         <Button Content="Видалити обране" Width="140" Height="30" Background="#DC3545" Foreground="White" FontWeight="Bold" Click="DeleteDevice_Click"/>
+                        <TextBlock Text="Пошук за прізвищем:" VerticalAlignment="Center" Margin="15,0,5,0"/>
+                        <TextBox x:Name="txtDeviceCustomerSearch" Width="150" Height="30" VerticalContentAlignment="Center" Padding="5" TextChanged="DeviceCustomerSearch_TextChanged"/>
                     </StackPanel>
 
                     <!-- Таблиця пристроїв -->

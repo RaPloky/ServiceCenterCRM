@@ -12,6 +12,10 @@ namespace Service_Center
     public partial class MainWindow : Window
     {
         private Employee _currentEmployee;
+        private List<Repair> _repairs = new();
+        private List<Sale> _sales = new();
+        private List<Customer> _customers = new();
+        private List<CustomerDevice> _devices = new();
 
         public MainWindow(Employee employee)
         {
@@ -59,9 +63,25 @@ namespace Service_Center
             using (var db = new AppDbContext())
             {
                 // Завантажуємо список ремонтів із бази даних
-                var repairsList = db.Repairs.ToList();
-                dgRepairs.ItemsSource = repairsList;
+                _repairs = db.Repairs.ToList();
+                ApplyRepairSearch();
             }
+        }
+
+        private void RepairSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyRepairSearch();
+        }
+
+        private void ApplyRepairSearch()
+        {
+            string searchTerm = NormalizeSearchTerm(txtRepairSearch?.Text);
+
+            dgRepairs.ItemsSource = string.IsNullOrEmpty(searchTerm)
+                ? _repairs
+                : _repairs.Where(repair => NormalizeSearchTerm(repair.RepairNumber)
+                    .Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
         }
 
         private void AddRepair_Click(object sender, RoutedEventArgs e)
@@ -167,9 +187,25 @@ namespace Service_Center
         {
             using (var db = new AppDbContext())
             {
-                var customersList = db.Customers.ToList();
-                dgCustomers.ItemsSource = customersList;
+                _customers = db.Customers.ToList();
+                ApplyCustomerSearch();
             }
+        }
+
+        private void CustomerSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyCustomerSearch();
+        }
+
+        private void ApplyCustomerSearch()
+        {
+            string searchTerm = NormalizeSearchTerm(txtCustomerSearch?.Text);
+
+            dgCustomers.ItemsSource = string.IsNullOrEmpty(searchTerm)
+                ? _customers
+                : _customers.Where(customer => NormalizeSearchTerm(customer.LastName)
+                    .Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
         }
 
         private void AddCustomer_Click(object sender, RoutedEventArgs e)
@@ -185,12 +221,29 @@ namespace Service_Center
         {
             using (var db = new AppDbContext())
             {
-                var devicesList = db.CustomerDevices
+                _devices = db.CustomerDevices
                     .Include(d => d.Customer) // Підтягуємо дані про власника пристрою
                     .ToList();
 
-                dgDevices.ItemsSource = devicesList;
+                ApplyDeviceCustomerSearch();
             }
+        }
+
+        private void DeviceCustomerSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplyDeviceCustomerSearch();
+        }
+
+        private void ApplyDeviceCustomerSearch()
+        {
+            string searchTerm = NormalizeSearchTerm(txtDeviceCustomerSearch?.Text);
+
+            dgDevices.ItemsSource = string.IsNullOrEmpty(searchTerm)
+                ? _devices
+                : _devices.Where(device => device.Customer != null
+                    && NormalizeSearchTerm(device.Customer.LastName)
+                        .Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
         }
 
         private void AddDevice_Click(object sender, RoutedEventArgs e)
@@ -224,12 +277,36 @@ namespace Service_Center
         {
             using (var db = new AppDbContext())
             {
-                dgSales.ItemsSource = db.Sales
+                _sales = db.Sales
                     .Include(s => s.Customer)     // Підтягуємо дані клієнта
                     .Include(s => s.Employee)     // Підтягуємо дані працівника
                     .OrderByDescending(s => s.SaleDate)
                     .ToList();
+
+                ApplySalesCustomerSearch();
             }
+        }
+
+        private void SalesCustomerSearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplySalesCustomerSearch();
+        }
+
+        private void ApplySalesCustomerSearch()
+        {
+            string searchTerm = NormalizeSearchTerm(txtSalesCustomerSearch?.Text);
+
+            dgSales.ItemsSource = string.IsNullOrEmpty(searchTerm)
+                ? _sales
+                : _sales.Where(sale => sale.Customer != null
+                    && NormalizeSearchTerm(sale.Customer.LastName)
+                        .Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+        }
+
+        private static string NormalizeSearchTerm(string? value)
+        {
+            return value?.Trim() ?? string.Empty;
         }
 
         private void AddSale_Click(object sender, RoutedEventArgs e)
