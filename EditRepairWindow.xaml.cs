@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using Service_Center.Data;
 using Service_Center.Models;
+using Service_Store.Helpers;
 using Service_Store.Models;
 using System;
 using System.Diagnostics;
@@ -412,6 +413,12 @@ namespace Service_Store
             {
                 MessageBox.Show("Оберіть запчастину в таблиці для видалення!", "Увага", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
+        }
+
+        private void PrintAct_Click(object sender, RoutedEventArgs e)
+        {
+            // Викликаємо друк для поточного ремонту
+            DocumentPrinter.PrintRepairAct(_repairId);
         }
     }
 }

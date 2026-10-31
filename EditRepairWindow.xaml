@@ -104,6 +104,9 @@
                         <DataGridTextColumn Header="Коментар" Binding="{Binding Comment}" Width="*"/>
                     </DataGrid.Columns>
                 </DataGrid>
+                <Button Content="🖨 Друк акта робіт" Width="150" Height="30" 
+        Background="#17A2B8" Foreground="White" FontWeight="Bold" 
+        Click="PrintAct_Click" Margin="0,0,10,0"/>
             </StackPanel>
         </ScrollViewer>
 

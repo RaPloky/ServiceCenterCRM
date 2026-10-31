@@ -2,6 +2,7 @@
 using Service_Center.Data;
 using Service_Center.Models;
 using Service_Store;
+using Service_Store.Helpers;
 using Service_Store.Models;
 using System.Windows;
 using System.Windows.Controls;
@@ -429,6 +430,18 @@ namespace Service_Center
             else
             {
                 MessageBox.Show("Будь ласка, оберіть пристрій у таблиці для видалення!", "Увага", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        private void PrintReceipt_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgSales.SelectedItem is Sale selectedSale)
+            {
+                DocumentPrinter.PrintSaleReceipt(selectedSale.SaleId);
+            }
+            else
+            {
+                MessageBox.Show("Оберіть продаж із таблиці для друку чека!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }
