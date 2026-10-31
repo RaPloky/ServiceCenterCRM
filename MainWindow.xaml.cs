@@ -295,22 +295,143 @@ namespace Service_Center
         {
             using (var db = new AppDbContext())
             {
-                // 1. Рахуємо загальну суму всіх продажів
-                decimal totalSales = db.Sales.Sum(s => (decimal?)s.TotalAmount) ?? 0;
-                txtTotalSales.Text = $"{totalSales:N2} грн";
+                // 1. Звіт: Фінанси та продажі
+                var salesReport = db.Sales
+                    .Include(s => s.Customer)
+                    .Include(s => s.Employee)
+                    .OrderByDescending(s => s.SaleDate)
+                    .ToList()
+                    .Select(s => new
+                    {
+                        s.SaleId,
+                        s.SaleNumber,
+                        s.SaleDate,
+                        EmployeeName = s.Employee != null ? $"{s.Employee.FirstName} {s.Employee.LastName}" : "Н/Д",
+                        CustomerName = s.Customer != null ? $"{s.Customer.FirstName} {s.Customer.LastName}" : "Анонім",
+                        s.TotalAmount,
+                        s.BonusUsed,
+                        PaymentMethods = string.Join(", ", db.Payments.Where(p => p.SaleId == s.SaleId).Select(p => p.PaymentMethod).Distinct())
+                    })
+                    .ToList();
+                dgReportSales.ItemsSource = salesReport;
 
-                // 2. Рахуємо загальну кількість ремонтів
-                int repairsCount = db.Repairs.Count();
-                txtActiveRepairs.Text = repairsCount.ToString();
+                // 2. Звіт: Зарплати та результативність (визначаємо посаду за PositionId)
+                var employeesList = db.Employees.ToList();
 
-                // 3. Знаходимо товари з критичним залишком (менше або дорівнює 3)
-                var lowStockItems = db.WarehouseStocks
-                    .Include(w => w.Product)
-                    .Where(w => w.Quantity <= 3)
+                var payrollReport = employeesList.Select(emp =>
+                {
+                    int completedRepairs = db.Repairs.Count(r => r.AssignedEmployeeId == emp.EmployeeId);
+                    decimal totalSales = db.Sales.Where(s => s.EmployeeId == emp.EmployeeId).Sum(s => (decimal?)s.TotalAmount) ?? 0;
+
+                    string positionName = "Працівник";
+                    decimal salary = 0;
+
+                    // Приблизна логіка за ID посад (можеш підкоригувати цифри під свої дані)
+                    if (emp.PositionId == 3)
+                    {
+                        positionName = "Інженер / Майстер";
+                        decimal repairsSum = db.Repairs.Where(r => r.AssignedEmployeeId == emp.EmployeeId).Sum(r => (decimal?)(r.FinalPrice ?? r.EstimatedPrice)) ?? 0;
+                        salary = repairsSum * 0.30m; // 30% від ремонтів
+                    }
+                    else if (emp.PositionId == 2)
+                    {
+                        positionName = "Продавець";
+                        salary = totalSales * 0.01m; // 1% від продажів
+                    }
+                    else if (emp.PositionId == 1)
+                    {
+                        positionName = "Адміністратор";
+                        salary = 15000; // Фіксована ставка
+                    }
+
+                    return new
+                    {
+                        emp.EmployeeId,
+                        EmployeeName = $"{emp.FirstName} {emp.LastName}",
+                        PositionName = positionName,
+                        CompletedRepairs = completedRepairs,
+                        TotalSalesAmount = totalSales,
+                        CalculatedSalary = salary
+                    };
+                }).ToList();
+                dgReportPayroll.ItemsSource = payrollReport;
+
+                // 3. Звіт: Критичні залишки на складі
+                var stocks = db.WarehouseStocks.ToList();
+                var products = db.Products.ToList();
+
+                var lowStockReport = stocks
+                    .Where(w => w.Quantity <= w.MinimumQuantity || w.Quantity <= 3)
+                    .Select(w =>
+                    {
+                        var prod = products.FirstOrDefault(p => p.ProductId == w.ProductId);
+                        return new
+                        {
+                            w.ProductId,
+                            SKU = prod != null ? prod.ProductId.ToString() : "-",
+                            ProductName = prod?.Name ?? "Товар",
+                            w.Quantity,
+                            w.MinimumQuantity,
+                            w.ReservedQuantity,
+                            StatusText = w.Quantity == 0 ? "КРИТИЧНО (0 шт)" : "Потрібна закупка"
+                        };
+                    })
+                    .ToList();
+                dgReportLowStock.ItemsSource = lowStockReport;
+
+                // 4. Звіт: Завантаженість та аналітика ремонтів
+                var repairsList = db.Repairs
+                    .Include(r => r.Customer)
+                    .Include(r => r.AssignedEmployee)
+                    .OrderByDescending(r => r.ReceivedAt)
                     .ToList();
 
-                txtLowStock.Text = lowStockItems.Count.ToString();
-                dgLowStock.ItemsSource = lowStockItems;
+                var devicesList = db.CustomerDevices.ToList();
+                var statusesList = db.RepairStatuses.ToList();
+
+                var repairsReport = repairsList.Select(r =>
+                {
+                    var dev = devicesList.FirstOrDefault(d => d.DeviceId == r.DeviceId);
+                    var stat = statusesList.FirstOrDefault(s => s.StatusId == r.StatusId);
+
+                    return new
+                    {
+                        r.RepairNumber,
+                        DeviceInfo = dev != null ? $"{dev.Brand} {dev.Model}" : "Пристрій",
+                        CustomerName = r.Customer != null ? $"{r.Customer.LastName} {r.Customer.FirstName}" : "-",
+                        EngineerName = r.AssignedEmployee != null ? $"{r.AssignedEmployee.LastName} {r.AssignedEmployee.FirstName}" : "Не призначено",
+                        StatusName = stat?.Name ?? "-",
+                        FinalPrice = r.FinalPrice ?? r.EstimatedPrice,
+                        r.ReceivedAt
+                    };
+                }).ToList();
+                dgReportRepairs.ItemsSource = repairsReport;
+            }
+        }
+
+        private void ExportSelectedReport_Click(object sender, RoutedEventArgs e)
+        {
+            // Визначаємо, яка підвкладка зараз активна у Дашборді
+            if (reportsTabControl.SelectedItem is TabItem selectedTab)
+            {
+                string header = selectedTab.Header?.ToString();
+
+                if (selectedTab == tabReportSales)
+                {
+                    ExcelExporter.ExportDataGridToExcel(dgReportSales, "Звіт_Продажі_та_Фінанси");
+                }
+                else if (selectedTab == tabReportPayroll)
+                {
+                    ExcelExporter.ExportDataGridToExcel(dgReportPayroll, "Звіт_Зарплати_Персоналу");
+                }
+                else if (selectedTab == tabReportLowStock)
+                {
+                    ExcelExporter.ExportDataGridToExcel(dgReportLowStock, "Звіт_Дефіцит_Складу");
+                }
+                else if (selectedTab == tabReportRepairs)
+                {
+                    ExcelExporter.ExportDataGridToExcel(dgReportRepairs, "Звіт_Аналітика_Ремонтів");
+                }
             }
         }
 

@@ -19,56 +19,91 @@
         <!-- Головне робоче середовище (Вкладки) -->
         <TabControl Grid.Row="1" Margin="10" x:Name="mainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
             <TabItem Header="Дашборд" x:Name="tabDashboard">
-                <Grid Margin="15">
+                <Grid Margin="10">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Верхня панель з KPI картками -->
-                    <UniformGrid Grid.Row="0" Columns="3" Margin="0,0,0,15">
-                        <!-- Картка 1: Загальні продажі -->
-                        <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="5" Padding="15" Margin="5">
-                            <StackPanel>
-                                <TextBlock Text="Загальна сума продажів" Foreground="#6C757D" FontSize="14"/>
-                                <TextBlock x:Name="txtTotalSales" Text="0.00 грн" FontSize="22" FontWeight="Bold" Foreground="#28A745" Margin="0,5,0,0"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Картка 2: Активні ремонти -->
-                        <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="5" Padding="15" Margin="5">
-                            <StackPanel>
-                                <TextBlock Text="Усього ремонтів" Foreground="#6C757D" FontSize="14"/>
-                                <TextBlock x:Name="txtActiveRepairs" Text="0" FontSize="22" FontWeight="Bold" Foreground="#007BFF" Margin="0,5,0,0"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Картка 3: Дефіцит на складі -->
-                        <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="5" Padding="15" Margin="5">
-                            <StackPanel>
-                                <TextBlock Text="Товарів мало на складі" Foreground="#6C757D" FontSize="14"/>
-                                <TextBlock x:Name="txtLowStock" Text="0" FontSize="22" FontWeight="Bold" Foreground="#DC3545" Margin="0,5,0,0"/>
-                            </StackPanel>
-                        </Border>
-                    </UniformGrid>
-
-                    <!-- Кнопка оновлення даних -->
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,0,5,10">
-                        <Button Content="Оновити дашборд" Width="140" Height="30" Click="LoadDashboard_Click"/>
+                    <!-- Верхня панель з кнопкою експорту -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                        <Button Content="📊 Експорт обраного звіту (.xlsx)" Width="220" Height="32" 
+                    Background="#28A745" Foreground="White" FontWeight="Bold" 
+                    Click="ExportSelectedReport_Click"/>
                     </StackPanel>
 
-                    <!-- Таблиця сповіщень: товари, які закінчуються (менше або дорівнює 3 одиницям) -->
-                    <GroupBox Grid.Row="2" Header="Увага: товари на вичерпанні (залишок &lt;= 3)" Margin="5" Padding="5">
-                        <DataGrid x:Name="dgLowStock" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Товар" Binding="{Binding Product.Name}" Width="220"/>
-                                <DataGridTextColumn Header="SKU" Binding="{Binding Product.Sku}" Width="130"/>
-                                <DataGridTextColumn Header="Залишок" Binding="{Binding Quantity}" Width="100"/>
-                                <DataGridTextColumn Header="Розташування" Binding="{Binding Location}" Width="*"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </GroupBox>
+                    <!-- Підвкладки для звітів -->
+                    <TabControl x:Name="reportsTabControl" Grid.Row="1">
+
+                        <!-- Звіт 1: Фінанси та продажі -->
+                        <TabItem Header="💰 Фінанси та продажі" x:Name="tabReportSales">
+                            <Grid Margin="10">
+                                <DataGrid x:Name="dgReportSales" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="ID Продажу" Binding="{Binding SaleId}" Width="80"/>
+                                        <DataGridTextColumn Header="Чек №" Binding="{Binding SaleNumber}" Width="130"/>
+                                        <DataGridTextColumn Header="Дата" Binding="{Binding SaleDate, StringFormat={}{0:yyyy-MM-dd HH:mm}}" Width="140"/>
+                                        <DataGridTextColumn Header="Касир" Binding="{Binding EmployeeName}" Width="150"/>
+                                        <DataGridTextColumn Header="Клієнт" Binding="{Binding CustomerName}" Width="150"/>
+                                        <DataGridTextColumn Header="Сума (грн)" Binding="{Binding TotalAmount, StringFormat={}{0:N2}}" Width="110"/>
+                                        <DataGridTextColumn Header="Бонуси" Binding="{Binding BonusUsed, StringFormat={}{0:N2}}" Width="100"/>
+                                        <DataGridTextColumn Header="Метод оплати" Binding="{Binding PaymentMethods}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Звіт 2: Зарплати та ефективність -->
+                        <TabItem Header="👨‍💻 Зарплати працівників" x:Name="tabReportPayroll">
+                            <Grid Margin="10">
+                                <DataGrid x:Name="dgReportPayroll" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="ID" Binding="{Binding EmployeeId}" Width="50"/>
+                                        <DataGridTextColumn Header="Працівник" Binding="{Binding EmployeeName}" Width="180"/>
+                                        <DataGridTextColumn Header="Посада" Binding="{Binding PositionName}" Width="140"/>
+                                        <DataGridTextColumn Header="Виконано ремонтів" Binding="{Binding CompletedRepairs}" Width="130"/>
+                                        <DataGridTextColumn Header="Сума продажів (грн)" Binding="{Binding TotalSalesAmount, StringFormat={}{0:N2}}" Width="140"/>
+                                        <DataGridTextColumn Header="Нарахована ЗП (грн)" Binding="{Binding CalculatedSalary, StringFormat={}{0:N2}}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Звіт 3: Критичні залишки та дефіцит складу -->
+                        <TabItem Header="⚠️ Критичні залишки" x:Name="tabReportLowStock">
+                            <Grid Margin="10">
+                                <DataGrid x:Name="dgReportLowStock" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="ID Товару" Binding="{Binding ProductId}" Width="80"/>
+                                        <DataGridTextColumn Header="Артикул (SKU)" Binding="{Binding SKU}" Width="110"/>
+                                        <DataGridTextColumn Header="Назва товару/деталі" Binding="{Binding ProductName}" Width="200"/>
+                                        <DataGridTextColumn Header="Поточний залишок" Binding="{Binding Quantity}" Width="130"/>
+                                        <DataGridTextColumn Header="Мінімум" Binding="{Binding MinimumQuantity}" Width="90"/>
+                                        <DataGridTextColumn Header="Зарезервовано" Binding="{Binding ReservedQuantity}" Width="110"/>
+                                        <DataGridTextColumn Header="Статус" Binding="{Binding StatusText}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <!-- Звіт 4: Аналітика ремонтів -->
+                        <TabItem Header="🛠 Завантаженість ремонтів" x:Name="tabReportRepairs">
+                            <Grid Margin="10">
+                                <DataGrid x:Name="dgReportRepairs" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Заявка №" Binding="{Binding RepairNumber}" Width="110"/>
+                                        <DataGridTextColumn Header="Пристрій" Binding="{Binding DeviceInfo}" Width="160"/>
+                                        <DataGridTextColumn Header="Клієнт" Binding="{Binding CustomerName}" Width="140"/>
+                                        <DataGridTextColumn Header="Інженер" Binding="{Binding EngineerName}" Width="140"/>
+                                        <DataGridTextColumn Header="Статус" Binding="{Binding StatusName}" Width="130"/>
+                                        <DataGridTextColumn Header="Вартість (грн)" Binding="{Binding FinalPrice, StringFormat={}{0:N2}}" Width="110"/>
+                                        <DataGridTextColumn Header="Дата прийому" Binding="{Binding ReceivedAt, StringFormat={}{0:yyyy-MM-dd}}" Width="*"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                    </TabControl>
                 </Grid>
             </TabItem>
             <TabItem Header="Ремонти (СЦ)" x:Name="tabRepairs">
