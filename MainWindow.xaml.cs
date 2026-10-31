@@ -36,9 +36,8 @@ namespace Service_Center
             }
             else if (employee.PositionId == 3) // Інженер сервісного центру
             {
-                // Ховаємо продажі, магазин та постачальників/адмін
+                // Ховаємо продажі та постачальників/адмін
                 tabSales.Visibility = Visibility.Collapsed;
-                tabStore.Visibility = Visibility.Collapsed;
                 tabSuppliers.Visibility = Visibility.Collapsed;
                 tabAdmin.Visibility = Visibility.Collapsed;
             }
@@ -92,83 +91,6 @@ namespace Service_Center
             {
                 // Якщо ремонт успішно збережено, оновлюємо таблицю
                 LoadRepairs_Click(sender, e);
-            }
-        }
-
-        private void LoadProducts_Click(object sender, RoutedEventArgs e)
-        {
-            using (var db = new AppDbContext())
-            {
-                var productsList = db.Products.ToList();
-                dgProducts.ItemsSource = productsList;
-            }
-        }
-
-        private void CreateSale_Click(object sender, RoutedEventArgs e)
-        {
-            var selectedProduct = dgProducts.SelectedItem as Service_Store.Models.Product;
-
-            if (selectedProduct == null)
-            {
-                MessageBox.Show("Будь ласка, виберіть товар із каталогу для продажу!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            using (var db = new AppDbContext())
-            {
-                // Візьмемо для прикладу клієнта з ID = 1 (або того, якого виберемо)
-                int customerId = 1;
-                var customer = db.Customers.Find(customerId);
-
-                decimal saleAmount = selectedProduct.SalePrice;
-                decimal bonusesEarned = saleAmount * 0.01m; // Нараховуємо 1% від суми покупки
-
-                // 1. Створюємо запис про продаж
-                var newSale = new Sale
-                {
-                    EmployeeId = _currentEmployee.EmployeeId,
-                    CustomerId = customerId,
-                    SaleDate = DateTime.Now,
-                    TotalAmount = saleAmount,
-                    BonusUsed = 0 // Поки без списання, у наступному кроці додамо діалог використання балів
-                };
-
-                db.Sales.Add(newSale);
-                db.SaveChanges(); // Зберігаємо, щоб отримати SaleId
-
-                // 2. Додаємо позицію до чека
-                var saleItem = new SaleItem
-                {
-                    SaleId = newSale.SaleId,
-                    ProductId = selectedProduct.ProductId,
-                    Quantity = 1,
-                    UnitPrice = saleAmount
-                };
-                db.SaleItems.Add(saleItem);
-
-                // 3. Нараховуємо бонуси клієнту, якщо він існує
-                if (customer != null)
-                {
-                    customer.BonusBalance += bonusesEarned;
-
-                    // Записуємо транзакцію нарахування бонусів
-                    var bonusTransaction = new BonusTransaction
-                    {
-                        CustomerId = customerId,
-                        SaleId = newSale.SaleId,
-                        TransactionType = "earn",
-                        Amount = bonusesEarned,
-                        Description = $"Нарахування 1% за покупку №{newSale.SaleId}",
-                        CreatedAt = DateTime.Now
-                    };
-                    db.BonusTransactions.Add(bonusTransaction);
-                }
-
-                db.SaveChanges();
-
-                MessageBox.Show($"Продаж успішно оформлено!\nТовар: {selectedProduct.Name}\nНараховано бонусів: {bonusesEarned:N2} грн", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                LoadSales_Click(null, null);
             }
         }
 
@@ -411,10 +333,9 @@ namespace Service_Center
                     {
                         LoadRepairs_Click(null, null);
                     }
-                    else if (header == "Продажі" || header == "Магазин / Продажі")
+                    else if (header == "Продажі")
                     {
                         LoadSales_Click(null, null);
-                        LoadProducts_Click(null, null); // Оновлюємо і каталог товарів на випадок змін
                     }
                     else if (header == "Клієнти")
                     {
