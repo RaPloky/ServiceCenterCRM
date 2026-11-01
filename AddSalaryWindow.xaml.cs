@@ -8,12 +8,18 @@ namespace Service_Store
 {
     public partial class AddSalaryWindow : Window
     {
+        /// <summary>
+        /// Ініціалізує вікно додавання виплати зарплати.
+        /// </summary>
         public AddSalaryWindow()
         {
             InitializeComponent();
             LoadEmployees();
         }
 
+        /// <summary>
+        /// Завантажує працівників до списку вибору.
+        /// </summary>
         private void LoadEmployees()
         {
             using (var db = new AppDbContext())
@@ -22,6 +28,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Перевіряє та зберігає виплату зарплати.
+        /// </summary>
         private void SaveSalary_Click(object sender, RoutedEventArgs e)
         {
             if (cbEmployees.SelectedValue == null || string.IsNullOrWhiteSpace(txtAmount.Text) || string.IsNullOrWhiteSpace(txtPeriod.Text))

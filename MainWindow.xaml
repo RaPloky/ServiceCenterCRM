@@ -8,7 +8,6 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Верхня панель (Шапка з інформацією про працівника) -->
         <Border Background="#007ACC" Grid.Row="0">
             <Grid Margin="15,0">
                 <TextBlock x:Name="txtUserInfo" Text="Користувач: ..." Foreground="White" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Left"/>
@@ -16,7 +15,6 @@
             </Grid>
         </Border>
 
-        <!-- Головне робоче середовище (Вкладки) -->
         <TabControl Grid.Row="1" Margin="10" x:Name="mainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
             <TabItem Header="Дашборд" x:Name="tabDashboard">
                 <Grid Margin="10">
@@ -25,17 +23,14 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Верхня панель з кнопкою експорту -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="📊 Експорт обраного звіту (.xlsx)" Width="220" Height="32" 
                     Background="#28A745" Foreground="White" FontWeight="Bold" 
                     Click="ExportSelectedReport_Click"/>
                     </StackPanel>
 
-                    <!-- Підвкладки для звітів -->
                     <TabControl x:Name="reportsTabControl" Grid.Row="1">
 
-                        <!-- Звіт 1: Фінанси та продажі -->
                         <TabItem Header="💰 Фінанси та продажі" x:Name="tabReportSales">
                             <Grid Margin="10">
                                 <DataGrid x:Name="dgReportSales" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
@@ -53,7 +48,6 @@
                             </Grid>
                         </TabItem>
 
-                        <!-- Звіт 2: Зарплати та ефективність -->
                         <TabItem Header="👨‍💻 Зарплати працівників" x:Name="tabReportPayroll">
                             <Grid Margin="10">
                                 <DataGrid x:Name="dgReportPayroll" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
@@ -69,7 +63,6 @@
                             </Grid>
                         </TabItem>
 
-                        <!-- Звіт 3: Критичні залишки та дефіцит складу -->
                         <TabItem Header="⚠️ Критичні залишки" x:Name="tabReportLowStock">
                             <Grid Margin="10">
                                 <DataGrid x:Name="dgReportLowStock" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
@@ -86,7 +79,6 @@
                             </Grid>
                         </TabItem>
 
-                        <!-- Звіт 4: Аналітика ремонтів -->
                         <TabItem Header="🛠 Завантаженість ремонтів" x:Name="tabReportRepairs">
                             <Grid Margin="10">
                                 <DataGrid x:Name="dgReportRepairs" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
@@ -113,7 +105,6 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Панель дій -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити список" Width="130" Height="30" Margin="0,0,10,0" Click="LoadRepairs_Click"/>
                         <Button Content="+ Новий ремонт" Width="130" Height="30" Margin="0,0,10,0" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddRepair_Click"/>
@@ -123,7 +114,6 @@
                     </StackPanel>
 
 
-                    <!-- Таблиця для виведення ремонтів -->
                     <DataGrid x:Name="dgRepairs" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding RepairId}" Width="50"/>
@@ -142,7 +132,6 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Виправлена панель дій з обома кнопками -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити історію" Width="140" Height="30" Margin="0,0,10,0" Click="LoadSales_Click"/>
                         <Button Content="+ Новий продаж" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddSale_Click"/>
@@ -171,7 +160,6 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Панель дій -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити список" Width="130" Height="30" Margin="0,0,10,0" Click="LoadCustomers_Click"/>
                         <Button Content="+ Новий клієнт" Width="130" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddCustomer_Click"/>
@@ -179,7 +167,6 @@
                         <TextBox x:Name="txtCustomerSearch" Width="150" Height="30" VerticalContentAlignment="Center" Padding="5" TextChanged="CustomerSearch_TextChanged"/>
                     </StackPanel>
 
-                    <!-- Таблиця клієнтів -->
                     <DataGrid x:Name="dgCustomers" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding CustomerId}" Width="50"/>
@@ -199,12 +186,10 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Панель дій складу -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити залишки" Width="140" Height="30" Margin="0,0,10,0" Click="LoadWarehouse_Click"/>
                     </StackPanel>
 
-                    <!-- Таблиця залишків -->
                     <DataGrid x:Name="dgWarehouse" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding StockId}" Width="40"/>
@@ -225,7 +210,6 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Панель дій -->
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                         <Button Content="Оновити список" Width="140" Height="30" Margin="0,0,10,0" Click="LoadDevices_Click"/>
                         <Button Content="+ Новий пристрій" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" Click="AddDevice_Click"/>
@@ -234,7 +218,6 @@
                         <TextBox x:Name="txtDeviceCustomerSearch" Width="150" Height="30" VerticalContentAlignment="Center" Padding="5" TextChanged="DeviceCustomerSearch_TextChanged"/>
                     </StackPanel>
 
-                    <!-- Таблиця пристроїв -->
                     <DataGrid x:Name="dgDevices" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding DeviceId}" Width="40"/>
@@ -249,7 +232,6 @@
             </TabItem>
             <TabItem Header="Постачальники" x:Name="tabSuppliers">
                 <TabControl Margin="5">
-                    <!-- Підвкладка 1: Компанії-постачальники -->
                     <TabItem Header="Компанії">
                         <Grid Margin="10">
                             <Grid.RowDefinitions>
@@ -274,7 +256,6 @@
                         </Grid>
                     </TabItem>
 
-                    <!-- Підвкладка 2: Прайс-лист товарів -->
                     <TabItem Header="Прайс-лист товарів">
                         <Grid Margin="10">
                             <Grid.RowDefinitions>
@@ -300,10 +281,8 @@
                     </TabItem>
                 </TabControl>
             </TabItem>
-            <!-- Вкладка адміністратора, яку ми будемо ховати для звичайних ролей -->
             <TabItem Header="Адміністрування" x:Name="tabAdmin">
                 <TabControl Margin="5">
-                    <!-- Підвкладка: Облік зарплат -->
                     <TabItem Header="Зарплати">
                         <Grid Margin="10">
                             <Grid.RowDefinitions>

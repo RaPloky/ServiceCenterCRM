@@ -12,6 +12,9 @@ namespace Service_Store
         private decimal _totalAmount;
         private int _customerId;
 
+        /// <summary>
+        /// Ініціалізує вікно розподілу платежу.
+        /// </summary>
         public SplitPaymentWindow(int saleId, decimal totalAmount, int customerId)
         {
             InitializeComponent();
@@ -24,6 +27,9 @@ namespace Service_Store
             txtCashAmount.Text = _totalAmount.ToString("0.##");
         }
 
+        /// <summary>
+        /// Перевіряє та зберігає розподіл платежу за способами оплати.
+        /// </summary>
         private void ConfirmPayment_Click(object sender, RoutedEventArgs e)
         {
             // Парсимо введені суми
@@ -102,6 +108,9 @@ namespace Service_Store
             this.Close();
         }
 
+        /// <summary>
+        /// Скасовує розподіл платежу та закриває вікно.
+        /// </summary>
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;

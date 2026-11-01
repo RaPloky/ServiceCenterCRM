@@ -9,12 +9,18 @@ namespace Service_Store
     {
         private int _employeeId;
 
+        /// <summary>
+        /// Ініціалізує вікно створення ремонту для працівника.
+        /// </summary>
         public AddRepairWindow(int employeeId)
         {
             InitializeComponent();
             _employeeId = employeeId;
         }
 
+        /// <summary>
+        /// Перевіряє дані та створює новий запис ремонту.
+        /// </summary>
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtDescription.Text) || string.IsNullOrWhiteSpace(txtPrice.Text))

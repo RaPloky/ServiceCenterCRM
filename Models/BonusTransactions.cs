@@ -18,7 +18,7 @@ namespace Service_Store.Models
         public int? SaleId { get; set; }
 
         [Column("transaction_type")]
-        public string TransactionType { get; set; } = string.Empty; // "earn" (нарахування) або "spend" (списання)
+        public string TransactionType { get; set; } = string.Empty;
 
         [Column("amount")]
         public decimal Amount { get; set; }

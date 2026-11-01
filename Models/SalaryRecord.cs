@@ -27,7 +27,6 @@ namespace Service_Store.Models
         [Column("paid_at")]
         public DateTime? PaymentDate { get; set; }
 
-        // Навігаційна властивість до працівника
         [ForeignKey("EmployeeId")]
         public virtual Employee Employee { get; set; }
     }

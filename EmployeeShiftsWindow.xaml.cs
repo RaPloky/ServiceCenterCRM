@@ -12,6 +12,9 @@ namespace Service_Store
     {
         private Employee _currentEmployee;
 
+        /// <summary>
+        /// Ініціалізує вікно графіка змін працівників.
+        /// </summary>
         public EmployeeShiftsWindow(Employee currentEmployee)
         {
             InitializeComponent();
@@ -22,6 +25,9 @@ namespace Service_Store
             LoadShifts();
         }
 
+        /// <summary>
+        /// Перевіряє права адміністратора для редагування змін.
+        /// </summary>
         private void CheckAdminPermissions()
         {
             // Перевірка RBAC: Адміністратор має PositionId == 1
@@ -33,6 +39,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Завантажує працівників до списку вибору.
+        /// </summary>
         private void LoadEmployees()
         {
             using (var db = new AppDbContext())
@@ -41,6 +50,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Завантажує графік змін до таблиці.
+        /// </summary>
         private void LoadShifts()
         {
             using (var db = new AppDbContext())
@@ -62,6 +74,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Перевіряє та зберігає зміну працівника.
+        /// </summary>
         private void SaveShift_Click(object sender, RoutedEventArgs e)
         {
             if (cbEmployees.SelectedValue == null)

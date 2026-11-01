@@ -6,11 +6,17 @@ namespace Service_Store
 {
     public partial class AddSupplierWindow : Window
     {
+        /// <summary>
+        /// Ініціалізує вікно додавання постачальника.
+        /// </summary>
         public AddSupplierWindow()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Перевіряє та зберігає нового постачальника.
+        /// </summary>
         private void SaveSupplier_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtCompanyName.Text))

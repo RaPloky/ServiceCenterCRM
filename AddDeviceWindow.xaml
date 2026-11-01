@@ -6,12 +6,9 @@
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <!-- Основна форма з полями -->
             <RowDefinition Height="Auto"/>
-            <!-- Рядок для кнопки збереження -->
         </Grid.RowDefinitions>
 
-        <!-- Поля введення -->
         <StackPanel Grid.Row="0">
             <TextBlock Text="Власник (Клієнт):" FontWeight="SemiBold" Margin="0,0,0,5"/>
             <ComboBox x:Name="cbCustomers" Height="32" VerticalContentAlignment="Center" Margin="0,0,0,12" DisplayMemberPath="LastName" SelectedValuePath="CustomerId"/>
@@ -29,7 +26,6 @@
             <TextBox x:Name="txtSerialNumber" Height="32" VerticalContentAlignment="Center" Padding="5" Margin="0,0,0,5"/>
         </StackPanel>
 
-        <!-- Збільшена кнопка збереження -->
         <Button Grid.Row="1" Content="Зберегти пристрій" Height="45" Background="#28A745" Foreground="White" FontWeight="Bold" Click="SaveDevice_Click" Margin="0,15,0,0"/>
     </Grid>
 </Window>

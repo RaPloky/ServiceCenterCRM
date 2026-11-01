@@ -17,7 +17,7 @@ namespace Service_Store.Models
         public int ProductId { get; set; }
 
         [Column("name")]
-        public string Name { get; set; } = string.Empty; // Назва запчастини
+        public string Name { get; set; } = string.Empty;
 
         [Column("quantity")]
         public int Quantity { get; set; }
@@ -28,7 +28,6 @@ namespace Service_Store.Models
         [Column("supplier_id")]
         public int? SupplierId { get; set; }
 
-        // Навігаційні властивості
         [ForeignKey("RepairId")]
         public virtual Repair Repair { get; set; }
 

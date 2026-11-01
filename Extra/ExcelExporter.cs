@@ -1,8 +1,5 @@
 ﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +8,9 @@ namespace Service_Store.Helpers
 {
     public static class ExcelExporter
     {
+        /// <summary>
+        /// Експортує дані таблиці у файл CSV або Excel.
+        /// </summary>
         public static void ExportDataGridToExcel(DataGrid dataGrid, string defaultFileName)
         {
             if (dataGrid == null || dataGrid.Items.Count == 0)
@@ -32,7 +32,6 @@ namespace Service_Store.Helpers
                 {
                     StringBuilder sb = new StringBuilder();
 
-                    // Додаємо заголовки колонок
                     List<string> headers = new List<string>();
                     foreach (var column in dataGrid.Columns)
                     {
@@ -41,7 +40,6 @@ namespace Service_Store.Helpers
                     }
                     sb.AppendLine(string.Join(";", headers));
 
-                    // Додаємо рядки з даними
                     foreach (var item in dataGrid.Items)
                     {
                         List<string> cells = new List<string>();
@@ -68,12 +66,10 @@ namespace Service_Store.Helpers
                         sb.AppendLine(string.Join(";", cells));
                     }
 
-                    // Зберігаємо файл у форматі CSV/Excel
                     File.WriteAllText(saveFileDialog.FileName, sb.ToString(), Encoding.UTF8);
 
                     MessageBox.Show("Звіт успішно експортовано у файл!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // Одразу відкриваємо збережений файл
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                     {
                         FileName = saveFileDialog.FileName,

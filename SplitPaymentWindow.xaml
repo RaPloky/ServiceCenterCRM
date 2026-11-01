@@ -11,13 +11,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Загальна сума -->
         <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
             <TextBlock Text="Загальна сума до сплати: " FontSize="14" FontWeight="Bold"/>
             <TextBlock x:Name="txtTotalAmount" Text="0.00 грн" FontSize="14" FontWeight="Bold" Foreground="#28A745"/>
         </StackPanel>
 
-        <!-- Поля вводу сум по методах -->
         <StackPanel Grid.Row="1" Margin="0,0,0,15">
             <Grid Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
@@ -47,13 +45,11 @@
             </Grid>
         </StackPanel>
 
-        <!-- Інформація / залишок -->
         <Border Grid.Row="2" Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="4" Padding="10" VerticalAlignment="Top">
             <TextBlock Text="Сума рознесених платежів має дорівнювати загальній сумі чека. У разі використання бонусів вони автоматично спишуться з рахунку клієнта." 
                        TextWrapping="Wrap" FontSize="12" Foreground="#6C757D"/>
         </Border>
 
-        <!-- Кнопки керування -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Скасувати" Width="100" Height="30" Margin="0,0,10,0" Click="Cancel_Click"/>
             <Button Content="Підтвердити оплату" Width="140" Height="30" Background="#28A745" Foreground="White" FontWeight="Bold" Click="ConfirmPayment_Click"/>

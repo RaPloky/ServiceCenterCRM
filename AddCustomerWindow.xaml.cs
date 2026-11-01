@@ -6,11 +6,17 @@ namespace Service_Store
 {
     public partial class AddCustomerWindow : Window
     {
+        /// <summary>
+        /// Ініціалізує вікно додавання клієнта.
+        /// </summary>
         public AddCustomerWindow()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Перевіряє та зберігає нового клієнта.
+        /// </summary>
         private void SaveCustomer_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtLastName.Text) ||

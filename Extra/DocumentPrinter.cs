@@ -16,7 +16,7 @@ namespace Service_Store.Helpers
     public static class DocumentPrinter
     {
         /// <summary>
-        /// Друк / збереження чека продажу
+        /// Друкує або зберігає чек продажу.
         /// </summary>
         public static void PrintSaleReceipt(int saleId)
         {
@@ -87,7 +87,7 @@ namespace Service_Store.Helpers
         }
 
         /// <summary>
-        /// Друк Акта виконаних робіт по ремонту
+        /// Друкує або зберігає акт виконаних ремонтних робіт.
         /// </summary>
         public static void PrintRepairAct(int repairId)
         {
@@ -159,11 +159,10 @@ namespace Service_Store.Helpers
         }
 
         /// <summary>
-        /// Допоміжний метод: пропонує зберегти у файл або роздрукувати
+        /// Пропонує зберегти документ у файл або надрукувати його.
         /// </summary>
         private static void ProcessDocument(string defaultName, string textContent)
         {
-            // Спитуємо користувача, що він хоче зробити
             MessageBoxResult answer = MessageBox.Show(
                 "Бажаєте зберегти текстовий варіант документа на комп'ютер (наприклад, на Робочий стіл)?\n\n" +
                 "(Натисніть 'Так' — для збереження у файл .txt, 'Ні' — щоб відкрити системне вікно друку/PDF)",
@@ -173,11 +172,9 @@ namespace Service_Store.Helpers
 
             if (answer == MessageBoxResult.Yes)
             {
-                // Відкриваємо вікно збереження файлу
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
                 saveFileDialog.Filter = "Text file (*.txt)|*.txt|All files (*.*)|*.*";
                 saveFileDialog.FileName = defaultName + ".txt";
-                // За замовчуванням пропонуємо Робочий стіл
                 saveFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
                 if (saveFileDialog.ShowDialog() == true)
@@ -185,7 +182,6 @@ namespace Service_Store.Helpers
                     File.WriteAllText(saveFileDialog.FileName, textContent, Encoding.UTF8);
                     MessageBox.Show("Документ успішно збережено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    // Одразу відкриваємо створений файл у блокноті, щоб переглянути
                     System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                     {
                         FileName = saveFileDialog.FileName,
@@ -195,7 +191,6 @@ namespace Service_Store.Helpers
             }
             else if (answer == MessageBoxResult.No)
             {
-                // Стандартний віконний друк (де можна вибрати "Microsoft Print to PDF")
                 PrintDialog printDialog = new PrintDialog();
                 if (printDialog.ShowDialog() == true)
                 {

@@ -24,7 +24,6 @@ namespace Service_Store.Models
         [Column("end_time")]
         public TimeSpan EndTime { get; set; }
 
-        // Навігаційна властивість
         [ForeignKey("EmployeeId")]
         public virtual Employee Employee { get; set; }
     }

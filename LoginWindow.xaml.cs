@@ -6,11 +6,17 @@ namespace Service_Center
 {
     public partial class LoginWindow : Window
     {
+        /// <summary>
+        /// Ініціалізує вікно авторизації.
+        /// </summary>
         public LoginWindow()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Перевіряє облікові дані та відкриває головне вікно.
+        /// </summary>
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             string username = txtUsername.Text.Trim();

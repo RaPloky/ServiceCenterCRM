@@ -26,7 +26,6 @@ namespace Service_Store.Models
         [Column("is_available")]
         public bool IsAvailable { get; set; }
 
-        // Навігаційні властивості
         [ForeignKey("SupplierId")]
         public virtual Supplier Supplier { get; set; }
 

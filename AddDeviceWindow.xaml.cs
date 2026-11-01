@@ -7,12 +7,18 @@ namespace Service_Store
 {
     public partial class AddDeviceWindow : Window
     {
+        /// <summary>
+        /// Ініціалізує вікно додавання пристрою.
+        /// </summary>
         public AddDeviceWindow()
         {
             InitializeComponent();
             LoadCustomersForCombo();
         }
 
+        /// <summary>
+        /// Завантажує клієнтів до списку вибору власника.
+        /// </summary>
         private void LoadCustomersForCombo()
         {
             using (var db = new AppDbContext())
@@ -22,6 +28,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Перевіряє та зберігає новий пристрій клієнта.
+        /// </summary>
         private void SaveDevice_Click(object sender, RoutedEventArgs e)
         {
             if (cbCustomers.SelectedValue == null ||

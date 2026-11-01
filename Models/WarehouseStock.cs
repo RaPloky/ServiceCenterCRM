@@ -25,7 +25,6 @@ namespace Service_Store.Models
         [Column("minimum_quantity")]
         public int MinimumQuantity { get; set; }
 
-        // Навігаційна властивість для зв'язку з товаром
         [ForeignKey("ProductId")]
         public virtual Product Product { get; set; }
     }

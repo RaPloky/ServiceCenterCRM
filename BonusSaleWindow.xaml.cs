@@ -11,6 +11,9 @@ namespace Service_Store
     {
         private int _employeeId;
 
+        /// <summary>
+        /// Ініціалізує вікно продажу з використанням бонусів.
+        /// </summary>
         public BonusSaleWindow(int employeeId)
         {
             InitializeComponent();
@@ -18,6 +21,9 @@ namespace Service_Store
             LoadData();
         }
 
+        /// <summary>
+        /// Завантажує товари та клієнтів до списків вибору.
+        /// </summary>
         private void LoadData()
         {
             using (var db = new AppDbContext())
@@ -27,11 +33,17 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Перераховує суму після вибору товару.
+        /// </summary>
         private void CbProducts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CalculateTotals();
         }
 
+        /// <summary>
+        /// Оновлює баланс бонусів і підсумок після вибору клієнта.
+        /// </summary>
         private void CbCustomers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (cbCustomers.SelectedItem is Customer selectedCustomer)
@@ -45,11 +57,17 @@ namespace Service_Store
             CalculateTotals();
         }
 
+        /// <summary>
+        /// Перераховує підсумок після зміни використаних бонусів.
+        /// </summary>
         private void TxtBonusToSpend_TextChanged(object sender, TextChangedEventArgs e)
         {
             CalculateTotals();
         }
 
+        /// <summary>
+        /// Обчислює суму до сплати та нараховані бонуси.
+        /// </summary>
         private void CalculateTotals()
         {
             if (cbProducts.SelectedItem is Product product && cbCustomers.SelectedItem is Customer customer)
@@ -72,6 +90,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Перевіряє дані та зберігає продаж із бонусами.
+        /// </summary>
         private void CompleteSale_Click(object sender, RoutedEventArgs e)
         {
             if (cbProducts.SelectedItem is not Product selectedProduct)

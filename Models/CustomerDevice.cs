@@ -25,7 +25,6 @@ namespace Service_Store.Models
         [Column("serial_number")]
         public string? SerialNumber { get; set; }
 
-        // Навігаційна властивість для зв'язку з клієнтом
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
     }

@@ -17,6 +17,9 @@ namespace Service_Store
         private int _repairId;
         private Employee _currentEmployee;
 
+        /// <summary>
+        /// Ініціалізує вікно редагування ремонту.
+        /// </summary>
         public EditRepairWindow(int repairId, Employee currentEmployee)
         {
             InitializeComponent();
@@ -31,6 +34,9 @@ namespace Service_Store
             LoadRepairPartsData();
         }
 
+        /// <summary>
+        /// Завантажує вкладені файли ремонту.
+        /// </summary>
         private void LoadAttachments()
         {
             using (var db = new AppDbContext())
@@ -43,6 +49,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Додає вибраний файл до ремонту.
+        /// </summary>
         private void AddAttachment_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
@@ -86,6 +95,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Видаляє вибране вкладення ремонту.
+        /// </summary>
         private void DeleteAttachment_Click(object sender, RoutedEventArgs e)
         {
             if (lstAttachments.SelectedItem is RepairAttachment selectedAttachment)
@@ -117,6 +129,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Відкриває вибране вкладення системною програмою.
+        /// </summary>
         private void LstAttachments_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (lstAttachments.SelectedItem is RepairAttachment selectedAttachment)
@@ -142,6 +157,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Завантажує доступні статуси ремонту.
+        /// </summary>
         private void LoadStatuses()
         {
             using (var db = new AppDbContext())
@@ -150,6 +168,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Завантажує працівників до списку відповідальних.
+        /// </summary>
         private void LoadEmployees()
         {
             using (var db = new AppDbContext())
@@ -158,6 +179,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Завантажує основні дані ремонту у форму.
+        /// </summary>
         private void LoadRepairData()
         {
             using (var db = new AppDbContext())
@@ -176,6 +200,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Завантажує історію змін статусу ремонту.
+        /// </summary>
         private void LoadRepairHistory()
         {
             using (var db = new AppDbContext())
@@ -200,6 +227,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Перевіряє та зберігає зміни ремонту.
+        /// </summary>
         private void SaveRepair_Click(object sender, RoutedEventArgs e)
         {
             // 1. Валідація вхідних даних
@@ -292,6 +322,9 @@ namespace Service_Store
             this.Close();
         }
 
+        /// <summary>
+        /// Завантажує використані запчастини ремонту.
+        /// </summary>
         private void LoadRepairPartsData()
         {
             using (var db = new AppDbContext())
@@ -324,6 +357,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Додає вибрану запчастину до ремонту.
+        /// </summary>
         private void AddRepairPart_Click(object sender, RoutedEventArgs e)
         {
             if (cbWarehouseProducts.SelectedValue == null)
@@ -379,6 +415,9 @@ namespace Service_Store
             MessageBox.Show("Запчастину успішно додано до ремонту, склад оновлено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        /// <summary>
+        /// Видаляє вибрану запчастину з ремонту.
+        /// </summary>
         private void DeleteRepairPart_Click(object sender, RoutedEventArgs e)
         {
             if (dgRepairParts.SelectedItem != null)
@@ -415,6 +454,9 @@ namespace Service_Store
             }
         }
 
+        /// <summary>
+        /// Друкує акт виконаних робіт для ремонту.
+        /// </summary>
         private void PrintAct_Click(object sender, RoutedEventArgs e)
         {
             // Викликаємо друк для поточного ремонту

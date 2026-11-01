@@ -27,7 +27,6 @@ namespace Service_Store.Models
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // Навігаційні властивості
         [ForeignKey("RepairId")]
         public virtual Repair Repair { get; set; }
 

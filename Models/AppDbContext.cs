@@ -25,6 +25,9 @@ namespace Service_Center.Data
         public DbSet<RepairAttachment> RepairAttachments { get; set; }
         public DbSet<RepairPart> RepairParts { get; set; }
 
+        /// <summary>
+        /// Налаштовує підключення контексту до бази даних MySQL.
+        /// </summary>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString = "Server=localhost;Database=service_center_db;Uid=root;Pwd=;";

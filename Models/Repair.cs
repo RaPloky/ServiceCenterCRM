@@ -54,7 +54,6 @@ namespace Service_Store.Models
         [Column("issued_at")]
         public DateTime? IssuedAt { get; set; }
 
-        // Навігаційні властивості за необхідності
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
 

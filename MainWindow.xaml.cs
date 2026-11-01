@@ -17,6 +17,9 @@ namespace Service_Center
         private List<Customer> _customers = new();
         private List<CustomerDevice> _devices = new();
 
+        /// <summary>
+        /// Ініціалізує головне вікно для поточного працівника.
+        /// </summary>
         public MainWindow(Employee employee)
         {
             InitializeComponent();
@@ -49,6 +52,9 @@ namespace Service_Center
             LoadDashboard_Click(null, null);
         }
 
+        /// <summary>
+        /// Виконує вихід із системи та повертає до авторизації.
+        /// </summary>
         private void Logout_Click(object sender, RoutedEventArgs e)
         {
             // Кнопка виходу назад до вікна логіну
@@ -57,6 +63,9 @@ namespace Service_Center
             this.Close();
         }
 
+        /// <summary>
+        /// Завантажує список ремонтів.
+        /// </summary>
         private void LoadRepairs_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new AppDbContext())
@@ -67,11 +76,17 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Оновлює фільтр ремонтів після зміни пошукового запиту.
+        /// </summary>
         private void RepairSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyRepairSearch();
         }
 
+        /// <summary>
+        /// Фільтрує ремонти за номером квитанції.
+        /// </summary>
         private void ApplyRepairSearch()
         {
             string searchTerm = NormalizeSearchTerm(txtRepairSearch?.Text);
@@ -83,6 +98,9 @@ namespace Service_Center
                     .ToList();
         }
 
+        /// <summary>
+        /// Відкриває вікно створення ремонту.
+        /// </summary>
         private void AddRepair_Click(object sender, RoutedEventArgs e)
         {
             // Відкриваємо вікно створення ремонту, передаючи ID поточного працівника
@@ -94,6 +112,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Завантажує залишки товарів на складі.
+        /// </summary>
         private void LoadWarehouse_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new AppDbContext())
@@ -105,6 +126,9 @@ namespace Service_Center
                 dgWarehouse.ItemsSource = stockList;
             }
         }
+        /// <summary>
+        /// Завантажує список клієнтів.
+        /// </summary>
         private void LoadCustomers_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new AppDbContext())
@@ -114,11 +138,17 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Оновлює фільтр клієнтів після зміни пошукового запиту.
+        /// </summary>
         private void CustomerSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyCustomerSearch();
         }
 
+        /// <summary>
+        /// Фільтрує клієнтів за прізвищем.
+        /// </summary>
         private void ApplyCustomerSearch()
         {
             string searchTerm = NormalizeSearchTerm(txtCustomerSearch?.Text);
@@ -130,6 +160,9 @@ namespace Service_Center
                     .ToList();
         }
 
+        /// <summary>
+        /// Відкриває вікно додавання клієнта.
+        /// </summary>
         private void AddCustomer_Click(object sender, RoutedEventArgs e)
         {
             AddCustomerWindow addWindow = new AddCustomerWindow();
@@ -139,6 +172,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Завантажує пристрої клієнтів.
+        /// </summary>
         private void LoadDevices_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new AppDbContext())
@@ -151,11 +187,17 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Оновлює фільтр пристроїв після зміни пошукового запиту.
+        /// </summary>
         private void DeviceCustomerSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyDeviceCustomerSearch();
         }
 
+        /// <summary>
+        /// Фільтрує пристрої за прізвищем власника.
+        /// </summary>
         private void ApplyDeviceCustomerSearch()
         {
             string searchTerm = NormalizeSearchTerm(txtDeviceCustomerSearch?.Text);
@@ -168,6 +210,9 @@ namespace Service_Center
                     .ToList();
         }
 
+        /// <summary>
+        /// Відкриває вікно додавання пристрою.
+        /// </summary>
         private void AddDevice_Click(object sender, RoutedEventArgs e)
         {
             AddDeviceWindow addWindow = new AddDeviceWindow();
@@ -177,6 +222,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Відкриває вибраний ремонт для редагування.
+        /// </summary>
         private void EditRepair_Click(object sender, RoutedEventArgs e)
         {
             // Отримуємо вибраний у таблиці ремонт
@@ -195,6 +243,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Завантажує історію продажів.
+        /// </summary>
         private void LoadSales_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new AppDbContext())
@@ -209,11 +260,17 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Оновлює фільтр продажів після зміни пошукового запиту.
+        /// </summary>
         private void SalesCustomerSearch_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplySalesCustomerSearch();
         }
 
+        /// <summary>
+        /// Фільтрує продажі за прізвищем клієнта.
+        /// </summary>
         private void ApplySalesCustomerSearch()
         {
             string searchTerm = NormalizeSearchTerm(txtSalesCustomerSearch?.Text);
@@ -226,11 +283,17 @@ namespace Service_Center
                     .ToList();
         }
 
+        /// <summary>
+        /// Нормалізує пошуковий текст, видаляючи зайві пробіли.
+        /// </summary>
         private static string NormalizeSearchTerm(string? value)
         {
             return value?.Trim() ?? string.Empty;
         }
 
+        /// <summary>
+        /// Відкриває вікно створення продажу.
+        /// </summary>
         private void AddSale_Click(object sender, RoutedEventArgs e)
         {
             BonusSaleWindow saleWindow = new BonusSaleWindow(_currentEmployee.EmployeeId);
@@ -240,6 +303,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Завантажує список постачальників.
+        /// </summary>
         private void LoadSuppliersList_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new AppDbContext())
@@ -248,6 +314,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Відкриває вікно додавання постачальника.
+        /// </summary>
         private void AddSupplier_Click(object sender, RoutedEventArgs e)
         {
             AddSupplierWindow addWindow = new AddSupplierWindow();
@@ -258,6 +327,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Завантажує прайс-лист постачальників.
+        /// </summary>
         private void LoadSuppliers_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new AppDbContext())
@@ -271,6 +343,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Завантажує історію виплат зарплати.
+        /// </summary>
         private void LoadSalaries_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new AppDbContext())
@@ -282,6 +357,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Відкриває вікно додавання виплати зарплати.
+        /// </summary>
         private void AddSalary_Click(object sender, RoutedEventArgs e)
         {
             AddSalaryWindow salaryWindow = new AddSalaryWindow();
@@ -291,6 +369,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Оновлює показники та дані панелі моніторингу.
+        /// </summary>
         private void LoadDashboard_Click(object sender, RoutedEventArgs e)
         {
             using (var db = new AppDbContext())
@@ -409,6 +490,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Експортує вибраний звіт із панелі моніторингу.
+        /// </summary>
         private void ExportSelectedReport_Click(object sender, RoutedEventArgs e)
         {
             // Визначаємо, яка підвкладка зараз активна у Дашборді
@@ -435,6 +519,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Завантажує дані відповідно до вибраної вкладки.
+        /// </summary>
         private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Захист, щоб подія не спрацьовувала при виборі підвкладок всередині самих вкладок
@@ -483,12 +570,18 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Відкриває вікно графіка роботи.
+        /// </summary>
         private void OpenShifts_Click(object sender, RoutedEventArgs e)
         {
             EmployeeShiftsWindow shiftsWindow = new EmployeeShiftsWindow(_currentEmployee);
             shiftsWindow.ShowDialog();
         }
 
+        /// <summary>
+        /// Видаляє вибраний пристрій після перевірки залежностей.
+        /// </summary>
         private void DeleteDevice_Click(object sender, RoutedEventArgs e)
         {
             // Отримуємо обраний пристрій із таблиці (DataGrid)
@@ -552,6 +645,9 @@ namespace Service_Center
             }
         }
 
+        /// <summary>
+        /// Друкує чек вибраного продажу.
+        /// </summary>
         private void PrintReceipt_Click(object sender, RoutedEventArgs e)
         {
             if (dgSales.SelectedItem is Sale selectedSale)

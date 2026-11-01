@@ -15,17 +15,14 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- 1. Вибір товару -->
         <TextBlock Text="Оберіть товар:" FontWeight="SemiBold" Margin="0,0,0,5" Grid.Row="0"/>
         <ComboBox x:Name="cbProducts" Height="32" VerticalContentAlignment="Center" Margin="0,0,0,12" 
                   DisplayMemberPath="Name" SelectedValuePath="ProductId" SelectionChanged="CbProducts_SelectionChanged" Grid.Row="1"/>
 
-        <!-- 2. Вибір клієнта -->
         <TextBlock Text="Клієнт:" FontWeight="SemiBold" Margin="0,0,0,5" Grid.Row="2"/>
         <ComboBox x:Name="cbCustomers" Height="32" VerticalContentAlignment="Center" Margin="0,0,0,12" 
                   DisplayMemberPath="LastName" SelectedValuePath="CustomerId" SelectionChanged="CbCustomers_SelectionChanged" Grid.Row="3"/>
 
-        <!-- Інформація про баланс бонусів -->
         <Border Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="4" Padding="10" Margin="0,0,0,12" Grid.Row="4">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Доступно бонусів у клієнта: " FontWeight="Medium"/>
@@ -33,20 +30,17 @@
             </StackPanel>
         </Border>
 
-        <!-- 3. Списання бонусів -->
         <StackPanel Grid.Row="5" Margin="0,0,0,15">
             <TextBlock Text="Списати бонусні бали (грн):" FontWeight="SemiBold" Margin="0,0,0,5"/>
             <TextBox x:Name="txtBonusToSpend" Height="32" VerticalContentAlignment="Center" Padding="5" Text="0" TextChanged="TxtBonusToSpend_TextChanged"/>
         </StackPanel>
 
-        <!-- Підсумкова інформація -->
         <StackPanel Grid.Row="6" Margin="0,0,0,10">
             <TextBlock x:Name="txtProductPrice" Text="Ціна товару: 0.00 грн" FontSize="14"/>
             <TextBlock x:Name="txtFinalAmount" Text="До сплати: 0.00 грн" FontSize="18" FontWeight="Bold" Foreground="#007BFF" Margin="0,5,0,0"/>
             <TextBlock x:Name="txtBonusesEarned" Text="Буде нараховано бонусів: 0.00 грн" FontSize="13" Foreground="#28A745" Margin="0,5,0,0"/>
         </StackPanel>
 
-        <!-- Кнопка підтвердження -->
         <Button Grid.Row="7" Content="Підтвердити продаж" Height="45" Background="#28A745" Foreground="White" FontWeight="Bold" Click="CompleteSale_Click"/>
     </Grid>
 </Window>
