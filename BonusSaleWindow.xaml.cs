@@ -1,4 +1,5 @@
 ﻿using Service_Center.Data;
+using Service_Store.Helpers;
 using Service_Store.Models;
 using System;
 using System.Linq;
@@ -115,10 +116,20 @@ namespace Service_Store
             decimal finalAmount = selectedProduct.SalePrice - bonusToSpend;
             decimal bonusesEarned = finalAmount * 0.01m;
 
-            using (var db = new AppDbContext())
+            try
             {
-                var dbCustomer = db.Customers.Find(selectedCustomer.CustomerId);
-                if (dbCustomer == null) return;
+                using (var db = new AppDbContext())
+                {
+                    var dbCustomer = db.Customers.Find(selectedCustomer.CustomerId);
+                    if (dbCustomer == null) return;
+
+                    var stock = db.WarehouseStocks
+                        .FirstOrDefault(item => item.ProductId == selectedProduct.ProductId);
+                    if (stock == null || stock.Quantity - stock.ReservedQuantity < 1)
+                    {
+                        MessageBox.Show("Недостатньо товару на складі для продажу!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
 
                 // 1. Створюємо запис про продаж
                 var sale = new Sale
@@ -181,16 +192,17 @@ namespace Service_Store
 
                 // 5. Виклик вікна розподілу оплат (SplitPaymentWindow)
                 SplitPaymentWindow splitWindow = new SplitPaymentWindow(sale.SaleId, sale.TotalAmount, dbCustomer.CustomerId);
-                if (splitWindow.ShowDialog() == true)
-                {
-                    MessageBox.Show("Продаж успішно оформлено та оплачено!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
-                    this.DialogResult = true;
-                    this.Close();
+                    if (splitWindow.ShowDialog() == true)
+                    {
+                        MessageBox.Show("Продаж успішно оформлено та оплачено!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
+                        this.DialogResult = true;
+                        this.Close();
+                    }
                 }
-                else
-                {
-                    // Якщо касир закрив вікно оплати без підтвердження
-                }
+            }
+            catch (Exception ex)
+            {
+                DatabaseErrorHandler.Show(ex, "Не вдалося оформити продаж.");
             }
         }
     }

@@ -29,7 +29,7 @@ namespace Service_Center
             txtUserInfo.Text = $"Працівник: {employee.FirstName} {employee.LastName} (Посада ID: {employee.PositionId})";
 
             // Ролеве розмежування доступу (RBAC):
-            if (employee.PositionId == 2) // Продавець-консультант
+            if (employee.PositionId == (int)PositionRole.SalesConsultant)
             {
                 // Ховаємо ремонтні та адмін-вкладки
                 tabRepairs.Visibility = Visibility.Collapsed;
@@ -37,14 +37,14 @@ namespace Service_Center
                 tabSuppliers.Visibility = Visibility.Collapsed;
                 tabAdmin.Visibility = Visibility.Collapsed;
             }
-            else if (employee.PositionId == 3) // Інженер сервісного центру
+            else if (employee.PositionId == (int)PositionRole.ServiceEngineer)
             {
                 // Ховаємо продажі та постачальників/адмін
                 tabSales.Visibility = Visibility.Collapsed;
                 tabSuppliers.Visibility = Visibility.Collapsed;
                 tabAdmin.Visibility = Visibility.Collapsed;
             }
-            else if (employee.PositionId != 1) // Будь-яка інша / невідома посада
+            else if (employee.PositionId != (int)PositionRole.Administrator)
             {
                 tabAdmin.Visibility = Visibility.Collapsed;
             }
@@ -408,18 +408,18 @@ namespace Service_Center
                     decimal salary = 0;
 
                     // Приблизна логіка за ID посад (можеш підкоригувати цифри під свої дані)
-                    if (emp.PositionId == 3)
+                    if (emp.PositionId == (int)PositionRole.ServiceEngineer)
                     {
                         positionName = "Інженер / Майстер";
                         decimal repairsSum = db.Repairs.Where(r => r.AssignedEmployeeId == emp.EmployeeId).Sum(r => (decimal?)(r.FinalPrice ?? r.EstimatedPrice)) ?? 0;
                         salary = repairsSum * 0.30m; // 30% від ремонтів
                     }
-                    else if (emp.PositionId == 2)
+                    else if (emp.PositionId == (int)PositionRole.SalesConsultant)
                     {
                         positionName = "Продавець";
                         salary = totalSales * 0.01m; // 1% від продажів
                     }
-                    else if (emp.PositionId == 1)
+                    else if (emp.PositionId == (int)PositionRole.Administrator)
                     {
                         positionName = "Адміністратор";
                         salary = 15000; // Фіксована ставка

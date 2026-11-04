@@ -30,8 +30,7 @@ namespace Service_Store
         /// </summary>
         private void CheckAdminPermissions()
         {
-            // Перевірка RBAC: Адміністратор має PositionId == 1
-            if (_currentEmployee == null || _currentEmployee.PositionId != 1)
+            if (_currentEmployee == null || _currentEmployee.PositionId != (int)PositionRole.Administrator)
             {
                 pnlAdminControls.IsEnabled = false;
                 pnlAdminControls.Visibility = Visibility.Collapsed;

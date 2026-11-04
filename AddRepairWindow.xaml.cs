@@ -1,6 +1,8 @@
 ﻿using Service_Center.Data;
+using Service_Store.Helpers;
 using Service_Store.Models;
 using System;
+using System.Linq;
 using System.Windows;
 
 namespace Service_Store
@@ -35,22 +37,44 @@ namespace Service_Store
                 return;
             }
 
-            using (var db = new AppDbContext())
+            try
             {
-                var newRepair = new Repair
+                using (var db = new AppDbContext())
                 {
-                    RepairNumber = $"REP-{DateTime.Now:yyMMdd-mmss}",
-                    CustomerId = 1, // Поки беремо базового клієнта, пізніше зробимо вибір із випадаючого списку
-                    DeviceId = 1,   // Базовий пристрій клієнта
-                    CreatedBy = _employeeId,
-                    StatusId = 1,   // "Прийнято в СЦ"
-                    CustomerDescription = txtDescription.Text.Trim(),
-                    EstimatedPrice = price,
-                    ReceivedAt = DateTime.Now
-                };
+                    var customerDevice = db.CustomerDevices
+                        .OrderBy(device => device.DeviceId)
+                        .FirstOrDefault();
+                    int? initialStatusId = db.RepairStatuses
+                        .OrderBy(status => status.StatusId)
+                        .Select(status => (int?)status.StatusId)
+                        .FirstOrDefault();
 
-                db.Repairs.Add(newRepair);
-                db.SaveChanges();
+                    if (customerDevice == null || initialStatusId == null)
+                    {
+                        MessageBox.Show("У базі даних не налаштовано клієнта, пристрій або статус ремонту!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    var newRepair = new Repair
+                    {
+                        RepairNumber = $"REP-{DateTime.Now:yyMMdd-mmss}",
+                        CustomerId = customerDevice.CustomerId,
+                        DeviceId = customerDevice.DeviceId,
+                        CreatedBy = _employeeId,
+                        StatusId = initialStatusId.Value,
+                        CustomerDescription = txtDescription.Text.Trim(),
+                        EstimatedPrice = price,
+                        ReceivedAt = DateTime.Now
+                    };
+
+                    db.Repairs.Add(newRepair);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                DatabaseErrorHandler.Show(ex, "Не вдалося створити ремонт.");
+                return;
             }
 
             MessageBox.Show("Ремонт успішно створено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);

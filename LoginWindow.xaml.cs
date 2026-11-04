@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using Service_Center.Data;
+using Service_Store.Helpers;
 
 namespace Service_Center
 {
@@ -28,23 +29,28 @@ namespace Service_Center
                 return;
             }
 
-            using (var db = new AppDbContext())
+            try
             {
-                // Шукаємо працівника в базі за логіном і паролем
-                var employee = db.Employees
-                    .FirstOrDefault(emp => emp.Username == username && emp.PasswordHash == password);
+                using (var db = new AppDbContext())
+                {
+                    var employee = db.Employees
+                        .FirstOrDefault(emp => emp.Username == username && emp.PasswordHash == password);
 
-                if (employee != null)
-                {
-                    // Замість старого MessageBox.Show(...) успішного входу робимо так:
-                    MainWindow mainWindow = new MainWindow(employee);
-                    mainWindow.Show();
-                    this.Close(); // Закриваємо вікно авторизації
+                    if (employee != null)
+                    {
+                        MainWindow mainWindow = new MainWindow(employee);
+                        mainWindow.Show();
+                        this.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Невірний логін або пароль!", "Помилка входу", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
-                else
-                {
-                    MessageBox.Show("Невірний логін або пароль!", "Помилка входу", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            }
+            catch (Exception ex)
+            {
+                DatabaseErrorHandler.Show(ex, "Не вдалося виконати вхід.");
             }
         }
     }

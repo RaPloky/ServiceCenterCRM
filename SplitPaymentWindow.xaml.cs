@@ -1,4 +1,5 @@
 ﻿using Service_Center.Data;
+using Service_Store.Helpers;
 using Service_Store.Models;
 using System;
 using System.Linq;
@@ -51,8 +52,10 @@ namespace Service_Store
                 return;
             }
 
-            using (var db = new AppDbContext())
+            try
             {
+                using (var db = new AppDbContext())
+                {
                 // Якщо використовувалися бонуси, перевіряємо їх наявність у клієнта
                 if (bonus > 0)
                 {
@@ -100,7 +103,13 @@ namespace Service_Store
                     db.Payments.Add(new Payment { SaleId = _saleId, PaymentMethod = "BONUS", Amount = bonus, CreatedAt = DateTime.Now });
                 }
 
-                db.SaveChanges();
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                DatabaseErrorHandler.Show(ex, "Не вдалося зберегти оплату.");
+                return;
             }
 
             MessageBox.Show("Оплату успішно проведено та розподілено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
