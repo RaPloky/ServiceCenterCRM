@@ -1,9 +1,18 @@
 ﻿<Window x:Class="Service_Store.AddRepairWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Новий ремонт" Height="320" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="Новий ремонт" Height="520" Width="450" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid Margin="20">
         <StackPanel>
+            <TextBlock Text="Клієнт:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <ComboBox x:Name="cbCustomers" Height="32" VerticalContentAlignment="Center" Margin="0,0,0,12"
+                      DisplayMemberPath="LastName" SelectedValuePath="CustomerId"
+                      SelectionChanged="CbCustomers_SelectionChanged"/>
+
+            <TextBlock Text="Пристрій клієнта:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <ComboBox x:Name="cbDevices" Height="32" VerticalContentAlignment="Center" Margin="0,0,0,15"
+                      DisplayMemberPath="Model" SelectedValuePath="DeviceId"/>
+
             <TextBlock Text="Опис несправності:" FontWeight="SemiBold" Margin="0,0,0,5"/>
             <TextBox x:Name="txtDescription" Height="70" AcceptsReturn="True" TextWrapping="Wrap" Padding="5" Margin="0,0,0,15"/>
 

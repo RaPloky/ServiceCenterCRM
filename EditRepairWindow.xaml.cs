@@ -29,7 +29,7 @@ namespace Service_Store
             LoadStatuses();
             LoadEmployees();
             LoadRepairData();
-            LoadRepairHistory(); // Завантажуємо історію при відкритті вікна
+            LoadRepairHistory(); 
             LoadAttachments();
             LoadRepairPartsData();
         }

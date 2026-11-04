@@ -1,4 +1,5 @@
 ﻿using Service_Center.Data;
+using Service_Store.Helpers;
 using Service_Store.Models;
 using System;
 using System.Linq;
@@ -115,36 +116,47 @@ namespace Service_Store
             decimal finalAmount = selectedProduct.SalePrice - bonusToSpend;
             decimal bonusesEarned = finalAmount * 0.01m;
 
-            using (var db = new AppDbContext())
+            try
             {
-                var dbCustomer = db.Customers.Find(selectedCustomer.CustomerId);
-                if (dbCustomer == null) return;
+                using (var db = new AppDbContext())
+                {
+                    var dbCustomer = db.Customers.Find(selectedCustomer.CustomerId);
+                    if (dbCustomer == null) return;
+
+                    var availableStock = db.WarehouseStocks
+                        .FirstOrDefault(stock => stock.ProductId == selectedProduct.ProductId);
+
+                    if (availableStock == null || availableStock.Quantity - availableStock.ReservedQuantity < 1)
+                    {
+                        MessageBox.Show("Вибраного товару немає в достатній кількості на складі!", "Недостатньо товару", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
 
                 // 1. Створюємо запис про продаж
-                var sale = new Sale
-                {
-                    EmployeeId = _employeeId,
-                    CustomerId = dbCustomer.CustomerId,
-                    SaleDate = DateTime.Now,
-                    TotalAmount = finalAmount,
-                    BonusUsed = bonusToSpend,
-                    SaleNumber = "POS-" + DateTime.Now.ToString("yyyyMMddHHmmssfff")
-                };
-                db.Sales.Add(sale);
-                db.SaveChanges(); // Зберігаємо, щоб отримати sale.SaleId
+                    var sale = new Sale
+                    {
+                        EmployeeId = _employeeId,
+                        CustomerId = dbCustomer.CustomerId,
+                        SaleDate = DateTime.Now,
+                        TotalAmount = finalAmount,
+                        BonusUsed = bonusToSpend,
+                        SaleNumber = "POS-" + DateTime.Now.ToString("yyyyMMddHHmmssfff")
+                    };
+                    db.Sales.Add(sale);
+                    db.SaveChanges();
 
                 // 2. Додаємо позицію чека
-                var saleItem = new SaleItem
-                {
-                    SaleId = sale.SaleId,
-                    ProductId = selectedProduct.ProductId,
-                    Quantity = 1,
-                    UnitPrice = selectedProduct.SalePrice
-                };
-                db.SaleItems.Add(saleItem);
+                    var saleItem = new SaleItem
+                    {
+                        SaleId = sale.SaleId,
+                        ProductId = selectedProduct.ProductId,
+                        Quantity = 1,
+                        UnitPrice = selectedProduct.SalePrice
+                    };
+                    db.SaleItems.Add(saleItem);
 
                 // 3. Якщо списуємо бонуси
-                if (bonusToSpend > 0)
+                    if (bonusToSpend > 0)
                 {
                     dbCustomer.BonusBalance -= bonusToSpend;
 
@@ -161,7 +173,7 @@ namespace Service_Store
                 }
 
                 // 4. Нараховуємо 1% нових бонусів
-                if (bonusesEarned > 0)
+                    if (bonusesEarned > 0)
                 {
                     dbCustomer.BonusBalance += bonusesEarned;
 
@@ -177,20 +189,21 @@ namespace Service_Store
                     db.BonusTransactions.Add(earnTransaction);
                 }
 
-                db.SaveChanges();
+                    db.SaveChanges();
 
                 // 5. Виклик вікна розподілу оплат (SplitPaymentWindow)
-                SplitPaymentWindow splitWindow = new SplitPaymentWindow(sale.SaleId, sale.TotalAmount, dbCustomer.CustomerId);
-                if (splitWindow.ShowDialog() == true)
-                {
-                    MessageBox.Show("Продаж успішно оформлено та оплачено!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
-                    this.DialogResult = true;
-                    this.Close();
+                    SplitPaymentWindow splitWindow = new SplitPaymentWindow(sale.SaleId, sale.TotalAmount, dbCustomer.CustomerId);
+                    if (splitWindow.ShowDialog() == true)
+                    {
+                        MessageBox.Show("Продаж успішно оформлено та оплачено!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
+                        this.DialogResult = true;
+                        this.Close();
+                    }
                 }
-                else
-                {
-                    // Якщо касир закрив вікно оплати без підтвердження
-                }
+            }
+            catch (Exception ex)
+            {
+                DatabaseErrorHandler.Show(ex, "Не вдалося оформити продаж.");
             }
         }
     }

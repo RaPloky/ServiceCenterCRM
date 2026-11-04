@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Service_Center.Configuration;
 using Service_Store.Models;
 using Service_Center.Models;
 
@@ -30,7 +31,7 @@ namespace Service_Center.Data
         /// </summary>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string connectionString = "Server=localhost;Database=service_center_db;Uid=root;Pwd=;";
+            string connectionString = DatabaseConfiguration.ConnectionString;
 
             optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
         }

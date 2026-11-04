@@ -1,7 +1,10 @@
 ﻿using Service_Center.Data;
+using Service_Store.Helpers;
 using Service_Store.Models;
 using System;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Service_Store
 {
@@ -16,6 +19,38 @@ namespace Service_Store
         {
             InitializeComponent();
             _employeeId = employeeId;
+            LoadCustomers();
+        }
+
+        /// <summary>
+        /// Завантажує клієнтів до списку вибору.
+        /// </summary>
+        private void LoadCustomers()
+        {
+            using var db = new AppDbContext();
+            cbCustomers.ItemsSource = db.Customers
+                .OrderBy(c => c.LastName)
+                .ThenBy(c => c.FirstName)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Завантажує пристрої вибраного клієнта.
+        /// </summary>
+        private void CbCustomers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cbCustomers.SelectedValue is not int customerId)
+            {
+                cbDevices.ItemsSource = null;
+                return;
+            }
+
+            using var db = new AppDbContext();
+            cbDevices.ItemsSource = db.CustomerDevices
+                .Where(device => device.CustomerId == customerId)
+                .OrderBy(device => device.Brand)
+                .ThenBy(device => device.Model)
+                .ToList();
         }
 
         /// <summary>
@@ -23,9 +58,12 @@ namespace Service_Store
         /// </summary>
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtDescription.Text) || string.IsNullOrWhiteSpace(txtPrice.Text))
+            if (cbCustomers.SelectedValue is not int customerId ||
+                cbDevices.SelectedValue is not int deviceId ||
+                string.IsNullOrWhiteSpace(txtDescription.Text) ||
+                string.IsNullOrWhiteSpace(txtPrice.Text))
             {
-                MessageBox.Show("Будь ласка, заповніть усі поля!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Оберіть клієнта та пристрій і заповніть усі поля!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -35,22 +73,41 @@ namespace Service_Store
                 return;
             }
 
-            using (var db = new AppDbContext())
+            try
             {
-                var newRepair = new Repair
+                using (var db = new AppDbContext())
                 {
-                    RepairNumber = $"REP-{DateTime.Now:yyMMdd-mmss}",
-                    CustomerId = 1, // Поки беремо базового клієнта, пізніше зробимо вибір із випадаючого списку
-                    DeviceId = 1,   // Базовий пристрій клієнта
-                    CreatedBy = _employeeId,
-                    StatusId = 1,   // "Прийнято в СЦ"
-                    CustomerDescription = txtDescription.Text.Trim(),
-                    EstimatedPrice = price,
-                    ReceivedAt = DateTime.Now
-                };
+                    int? initialStatusId = db.RepairStatuses
+                        .OrderBy(status => status.StatusId)
+                        .Select(status => (int?)status.StatusId)
+                        .FirstOrDefault();
 
-                db.Repairs.Add(newRepair);
-                db.SaveChanges();
+                    if (initialStatusId == null)
+                    {
+                        MessageBox.Show("У базі даних не налаштовано статуси ремонтів!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    var newRepair = new Repair
+                    {
+                        RepairNumber = $"REP-{DateTime.Now:yyMMdd-mmss}",
+                        CustomerId = customerId,
+                        DeviceId = deviceId,
+                        CreatedBy = _employeeId,
+                        StatusId = initialStatusId.Value,
+                        CustomerDescription = txtDescription.Text.Trim(),
+                        EstimatedPrice = price,
+                        ReceivedAt = DateTime.Now
+                    };
+
+                    db.Repairs.Add(newRepair);
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                DatabaseErrorHandler.Show(ex, "Не вдалося створити ремонт.");
+                return;
             }
 
             MessageBox.Show("Ремонт успішно створено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);

@@ -1,4 +1,5 @@
 ﻿using Service_Center.Data;
+using Service_Store.Helpers;
 using Service_Store.Models;
 using System;
 using System.Linq;
@@ -51,56 +52,75 @@ namespace Service_Store
                 return;
             }
 
-            using (var db = new AppDbContext())
+            try
             {
-                // Якщо використовувалися бонуси, перевіряємо їх наявність у клієнта
-                if (bonus > 0)
+                using (var db = new AppDbContext())
                 {
-                    var customer = db.Customers.Find(_customerId);
-                    if (customer == null || customer.BonusBalance < bonus)
+                    if (bonus > 0)
                     {
-                        MessageBox.Show("У клієнта недостатньо бонусних балів для списання!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        var customer = db.Customers.Find(_customerId);
+                        if (customer == null || customer.BonusBalance < bonus)
+                        {
+                            MessageBox.Show("У клієнта недостатньо бонусних балів для списання!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+
+                        customer.BonusBalance -= bonus;
+
+                        var bonusTransaction = new BonusTransaction
+                        {
+                            CustomerId = _customerId,
+                            SaleId = _saleId,
+                            TransactionType = "use",
+                            Amount = -bonus,
+                            Description = $"Списання бонусів при оплаті чека №{_saleId}",
+                            CreatedAt = DateTime.Now
+                        };
+                        db.BonusTransactions.Add(bonusTransaction);
+
+                        var saleRecord = db.Sales.Find(_saleId);
+                        if (saleRecord != null)
+                        {
+                            saleRecord.BonusUsed = bonus;
+                        }
+                    }
+
+                    if (cash > 0)
+                    {
+                        db.Payments.Add(new Payment { SaleId = _saleId, PaymentMethod = "CASH", Amount = cash, CreatedAt = DateTime.Now });
+                    }
+                    if (card > 0)
+                    {
+                        db.Payments.Add(new Payment { SaleId = _saleId, PaymentMethod = "CARD", Amount = card, CreatedAt = DateTime.Now });
+                    }
+                    if (bonus > 0)
+                    {
+                        db.Payments.Add(new Payment { SaleId = _saleId, PaymentMethod = "BONUS", Amount = bonus, CreatedAt = DateTime.Now });
+                    }
+
+                    var saleItem = db.SaleItems.FirstOrDefault(item => item.SaleId == _saleId);
+                    if (saleItem == null)
+                    {
+                        MessageBox.Show("Для продажу не знайдено товарну позицію!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
 
-                    // Списання бонусів із балансу клієнта
-                    customer.BonusBalance -= bonus;
-
-                    // Запис в історію бонусних транзакцій
-                    var bonusTransaction = new BonusTransaction
+                    var stock = db.WarehouseStocks.FirstOrDefault(item => item.ProductId == saleItem.ProductId);
+                    if (stock == null || stock.Quantity - stock.ReservedQuantity < saleItem.Quantity)
                     {
-                        CustomerId = _customerId,
-                        SaleId = _saleId,
-                        TransactionType = "use",
-                        Amount = -bonus,
-                        Description = $"Списання бонусів при оплаті чека №{_saleId}",
-                        CreatedAt = DateTime.Now
-                    };
-                    db.BonusTransactions.Add(bonusTransaction);
-
-                    // Також оновлюємо поле BonusUsed у самому продажі
-                    var saleRecord = db.Sales.Find(_saleId);
-                    if (saleRecord != null)
-                    {
-                        saleRecord.BonusUsed = bonus;
+                        MessageBox.Show("Недостатньо товару на складі для завершення продажу!", "Помилка складу", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
                     }
-                }
 
-                // Зберігаємо запити по методах оплати у таблицю payments
-                if (cash > 0)
-                {
-                    db.Payments.Add(new Payment { SaleId = _saleId, PaymentMethod = "CASH", Amount = cash, CreatedAt = DateTime.Now });
-                }
-                if (card > 0)
-                {
-                    db.Payments.Add(new Payment { SaleId = _saleId, PaymentMethod = "CARD", Amount = card, CreatedAt = DateTime.Now });
-                }
-                if (bonus > 0)
-                {
-                    db.Payments.Add(new Payment { SaleId = _saleId, PaymentMethod = "BONUS", Amount = bonus, CreatedAt = DateTime.Now });
-                }
+                    stock.Quantity -= saleItem.Quantity;
 
-                db.SaveChanges();
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                DatabaseErrorHandler.Show(ex, "Не вдалося завершити оплату.");
+                return;
             }
 
             MessageBox.Show("Оплату успішно проведено та розподілено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
