@@ -7,11 +7,27 @@ namespace Service_Store
 {
     public partial class AddDeviceWindow : Window
     {
+        private readonly int? _presetCustomerId;
+
         /// <summary>
         /// Ініціалізує вікно додавання пристрою.
         /// </summary>
         public AddDeviceWindow()
+            : this(null)
         {
+        }
+
+        /// <summary>
+        /// Ініціалізує вікно додавання пристрою з попередньо вибраним власником.
+        /// </summary>
+        public AddDeviceWindow(int customerId)
+            : this((int?)customerId)
+        {
+        }
+
+        private AddDeviceWindow(int? customerId)
+        {
+            _presetCustomerId = customerId;
             InitializeComponent();
             LoadCustomersForCombo();
         }
@@ -25,6 +41,13 @@ namespace Service_Store
             {
                 // Завантажуємо список клієнтів для вибору власника
                 cbCustomers.ItemsSource = db.Customers.ToList();
+
+                if (_presetCustomerId.HasValue)
+                {
+                    cbCustomers.SelectedValue = _presetCustomerId.Value;
+                    cbCustomers.IsHitTestVisible = false;
+                    cbCustomers.Focusable = false;
+                }
             }
         }
 

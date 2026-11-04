@@ -1,16 +1,79 @@
 ﻿<Window x:Class="Service_Store.AddRepairWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Новий ремонт" Height="320" Width="400" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="Новий ремонт" Height="760" Width="900" WindowStartupLocation="CenterScreen" ResizeMode="CanResize">
     <Grid Margin="20">
-        <StackPanel>
-            <TextBlock Text="Опис несправності:" FontWeight="SemiBold" Margin="0,0,0,5"/>
-            <TextBox x:Name="txtDescription" Height="70" AcceptsReturn="True" TextWrapping="Wrap" Padding="5" Margin="0,0,0,15"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <TextBlock Text="Орієнтовна ціна (грн):" FontWeight="SemiBold" Margin="0,0,0,5"/>
-            <TextBox x:Name="txtPrice" Height="30" VerticalContentAlignment="Center" Padding="5" Margin="0,0,0,25"/>
+        <GroupBox Header="Клієнт" Grid.Row="0" Margin="0,0,0,10">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="txtCustomerSearch" Height="30" Margin="0,0,0,8"
+                         VerticalContentAlignment="Center" TextChanged="CustomerSearch_TextChanged"/>
+                <DataGrid x:Name="dgCustomers" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True"
+                          SelectionMode="Single" MouseDoubleClick="Customers_MouseDoubleClick">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Ім'я" Binding="{Binding FirstName}" Width="*"/>
+                        <DataGridTextColumn Header="Прізвище" Binding="{Binding LastName}" Width="*"/>
+                        <DataGridTextColumn Header="Телефон" Binding="{Binding Phone}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
 
-            <Button Content="Зберегти ремонт" Height="40" Background="#28A745" Foreground="White" FontWeight="Bold" Click="SaveButton_Click"/>
-        </StackPanel>
+        <GroupBox Header="Пристрій клієнта" Grid.Row="1" Margin="0,0,0,10">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBox x:Name="txtDeviceSearch" Height="30" Margin="0,0,0,8"
+                         VerticalContentAlignment="Center" TextChanged="DeviceSearch_TextChanged"/>
+                <TextBlock x:Name="txtDeviceStatus" Grid.Row="1" Margin="0,0,0,8"
+                           Foreground="DarkRed" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap"
+                           Text="Для коригування запису ремонту, оберіть клієнта для відображення даних"/>
+                <DataGrid x:Name="dgDevices" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True"
+                          SelectionMode="Single" MouseDoubleClick="Devices_MouseDoubleClick">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Тип" Binding="{Binding DeviceType}" Width="*"/>
+                        <DataGridTextColumn Header="Бренд" Binding="{Binding Brand}" Width="*"/>
+                        <DataGridTextColumn Header="Модель" Binding="{Binding Model}" Width="*"/>
+                        <DataGridTextColumn Header="Прізвище власника" Binding="{Binding Customer.LastName}" Width="1.5*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </GroupBox>
+
+        <Button x:Name="btnAddDevice" Grid.Row="2" Content="Додати новий пристрій" Width="430" Height="34"
+                HorizontalAlignment="Center" Margin="0,0,0,10" Background="#28A745"
+                Foreground="White" FontWeight="Bold" IsEnabled="False" Click="AddDeviceButton_Click"/>
+
+        <TextBlock Grid.Row="3" Text="Опис несправності:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+        <TextBox x:Name="txtDescription" Grid.Row="4" Height="70" AcceptsReturn="True" TextWrapping="Wrap"
+                 Padding="5" Margin="0,0,0,10"/>
+
+        <Grid Grid.Row="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                <TextBlock Text="Орієнтовна ціна (грн):" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                <TextBox x:Name="txtPrice" Height="30" VerticalContentAlignment="Center" Padding="5"/>
+            </StackPanel>
+            <Button Grid.Column="1" Content="Зберегти ремонт" Width="180" Height="40" Margin="0,20,0,0"
+                    Background="#28A745" Foreground="White" FontWeight="Bold" Click="SaveButton_Click"/>
+        </Grid>
     </Grid>
 </Window>
