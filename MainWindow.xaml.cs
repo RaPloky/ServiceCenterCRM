@@ -31,15 +31,11 @@ namespace Service_Center
             // Ролеве розмежування доступу (RBAC):
             if (employee.PositionId == (int)PositionRole.SalesConsultant)
             {
-                // Ховаємо ремонтні та адмін-вкладки
-                tabRepairs.Visibility = Visibility.Collapsed;
-                tabDevices.Visibility = Visibility.Collapsed;
                 tabSuppliers.Visibility = Visibility.Collapsed;
                 tabAdmin.Visibility = Visibility.Collapsed;
             }
             else if (employee.PositionId == (int)PositionRole.ServiceEngineer)
             {
-                // Ховаємо продажі та постачальників/адмін
                 tabSales.Visibility = Visibility.Collapsed;
                 tabSuppliers.Visibility = Visibility.Collapsed;
                 tabAdmin.Visibility = Visibility.Collapsed;
