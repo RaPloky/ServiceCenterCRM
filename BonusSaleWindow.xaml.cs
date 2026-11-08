@@ -1,6 +1,7 @@
 ﻿using Service_Center.Data;
 using Service_Store.Helpers;
 using Service_Store.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 using System.Windows;
@@ -203,21 +204,43 @@ namespace Service_Store
                 return;
             }
 
-            decimal bonusToSpend = 0;
-            decimal.TryParse(txtBonusToSpend.Text, out bonusToSpend);
-            bonusToSpend = Math.Min(bonusToSpend, selectedCustomer.BonusBalance);
             decimal cartTotal = _cart.Sum(item => item.Total);
-            bonusToSpend = Math.Min(bonusToSpend, cartTotal);
 
-            decimal finalAmount = cartTotal - bonusToSpend;
+            if (!decimal.TryParse(txtBonusToSpend.Text, out decimal requestedBonus) || requestedBonus < 0)
+            {
+                MessageBox.Show("Введіть коректну суму бонусів!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            decimal initialBonus = Math.Min(requestedBonus, cartTotal);
+            decimal finalAmount = cartTotal - initialBonus;
+            var splitWindow = new SplitPaymentWindow(finalAmount);
+            if (splitWindow.ShowDialog() != true)
+            {
+                return;
+            }
+
+            decimal bonusToSpend = initialBonus;
             decimal bonusesEarned = finalAmount * 0.01m;
 
             try
             {
                 using (var db = new AppDbContext())
+                using (var transaction = db.Database.BeginTransaction())
                 {
                     var dbCustomer = db.Customers.Find(selectedCustomer.CustomerId);
-                    if (dbCustomer == null) return;
+                    if (dbCustomer == null)
+                    {
+                        transaction.Rollback();
+                        return;
+                    }
+
+                    if (bonusToSpend > dbCustomer.BonusBalance)
+                    {
+                        transaction.Rollback();
+                        MessageBox.Show("У клієнта недостатньо бонусних балів для оплати.", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
 
                     var stockByProduct = db.WarehouseStocks
                         .Where(item => _cart.Select(cartItem => cartItem.Product.ProductId).Contains(item.ProductId))
@@ -229,75 +252,88 @@ namespace Service_Store
                         return;
                     }
 
-                // 1. Створюємо запис про продаж
-                var sale = new Sale
-                {
-                    EmployeeId = _employeeId,
-                    CustomerId = dbCustomer.CustomerId,
-                    SaleDate = DateTime.Now,
-                    TotalAmount = finalAmount,
-                    BonusUsed = bonusToSpend,
-                    SaleNumber = "POS-" + DateTime.Now.ToString("yyyyMMddHHmmssfff")
-                };
-                db.Sales.Add(sale);
-                db.SaveChanges(); // Зберігаємо, щоб отримати sale.SaleId
-
-                foreach (var cartItem in _cart)
-                {
-                    db.SaleItems.Add(new SaleItem
+                    var sale = new Sale
                     {
-                        SaleId = sale.SaleId,
-                        ProductId = cartItem.Product.ProductId,
-                        Quantity = cartItem.Quantity,
-                        UnitPrice = cartItem.Product.SalePrice,
-                        Total = cartItem.Total
-                    });
-                }
-
-                // 3. Якщо списуємо бонуси
-                if (bonusToSpend > 0)
-                {
-                    dbCustomer.BonusBalance -= bonusToSpend;
-
-                    var spendTransaction = new BonusTransaction
-                    {
+                        EmployeeId = _employeeId,
                         CustomerId = dbCustomer.CustomerId,
-                        SaleId = sale.SaleId,
-                        TransactionType = "spend",
-                        Amount = bonusToSpend,
-                        Description = $"Списання бонусів за покупку №{sale.SaleId}",
-                        CreatedAt = DateTime.Now
+                        SaleDate = DateTime.Now,
+                        TotalAmount = finalAmount,
+                        BonusUsed = bonusToSpend,
+                        SaleNumber = "POS-" + DateTime.Now.ToString("yyyyMMddHHmmssfff")
                     };
-                    db.BonusTransactions.Add(spendTransaction);
-                }
+                    db.Sales.Add(sale);
+                    db.SaveChanges();
 
-                // 4. Нараховуємо 1% нових бонусів
-                if (bonusesEarned > 0)
-                {
-                    dbCustomer.BonusBalance += bonusesEarned;
-
-                    var earnTransaction = new BonusTransaction
+                    foreach (var cartItem in _cart)
                     {
-                        CustomerId = dbCustomer.CustomerId,
-                        SaleId = sale.SaleId,
-                        TransactionType = "earn",
-                        Amount = bonusesEarned,
-                        Description = $"Нарахування 1% за покупку №{sale.SaleId}",
-                        CreatedAt = DateTime.Now
-                    };
-                    db.BonusTransactions.Add(earnTransaction);
-                }
-
-                db.SaveChanges();
-
-                // 5. Виклик вікна розподілу оплат (SplitPaymentWindow)
-                SplitPaymentWindow splitWindow = new SplitPaymentWindow(sale.SaleId, sale.TotalAmount, dbCustomer.CustomerId);
-                    if (splitWindow.ShowDialog() == true)
-                    {
-                        MessageBox.Show("Продаж успішно оформлено та оплачено!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
-                        this.DialogResult = true;
-                        this.Close();
+                        db.SaleItems.Add(new SaleItem
+                        {
+                            SaleId = sale.SaleId,
+                            ProductId = cartItem.Product.ProductId,
+                            Quantity = cartItem.Quantity,
+                            UnitPrice = cartItem.Product.SalePrice,
+                            Total = cartItem.Total
+                        });
                     }
+
+                    if (bonusToSpend > 0)
+                    {
+                        dbCustomer.BonusBalance -= bonusToSpend;
+
+                        db.BonusTransactions.Add(new BonusTransaction
+                        {
+                            CustomerId = dbCustomer.CustomerId,
+                            SaleId = sale.SaleId,
+                            TransactionType = "spend",
+                            Amount = -bonusToSpend,
+                            Description = $"Списання бонусів за покупку №{sale.SaleId}",
+                            CreatedAt = DateTime.Now
+                        });
+                    }
+
+                    if (bonusesEarned > 0)
+                    {
+                        dbCustomer.BonusBalance += bonusesEarned;
+
+                        db.BonusTransactions.Add(new BonusTransaction
+                        {
+                            CustomerId = dbCustomer.CustomerId,
+                            SaleId = sale.SaleId,
+                            TransactionType = "earn",
+                            Amount = bonusesEarned,
+                            Description = $"Нарахування 1% за покупку №{sale.SaleId}",
+                            CreatedAt = DateTime.Now
+                        });
+                    }
+
+                    foreach (var cartItem in _cart)
+                    {
+                        int updatedRows = db.WarehouseStocks
+                            .Where(stock => stock.ProductId == cartItem.Product.ProductId &&
+                                            stock.Quantity - stock.ReservedQuantity >= cartItem.Quantity)
+                            .ExecuteUpdate(update => update.SetProperty(
+                                stock => stock.Quantity,
+                                stock => stock.Quantity - cartItem.Quantity));
+
+                        if (updatedRows != 1)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show("Залишок товару змінився іншим користувачем. Повторіть продаж.", "Конфлікт залишків", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                    }
+
+                    db.Payments.AddRange(
+                        splitWindow.CashAmount > 0 ? new[] { new Payment { SaleId = sale.SaleId, PaymentMethod = "CASH", Amount = splitWindow.CashAmount, CreatedAt = DateTime.Now } } : Array.Empty<Payment>());
+                    db.Payments.AddRange(
+                        splitWindow.CardAmount > 0 ? new[] { new Payment { SaleId = sale.SaleId, PaymentMethod = "CARD", Amount = splitWindow.CardAmount, CreatedAt = DateTime.Now } } : Array.Empty<Payment>());
+                    db.Payments.AddRange(
+                        bonusToSpend > 0 ? new[] { new Payment { SaleId = sale.SaleId, PaymentMethod = "BONUS", Amount = bonusToSpend, CreatedAt = DateTime.Now } } : Array.Empty<Payment>());
+
+                    transaction.Commit();
+                    MessageBox.Show("Продаж успішно оформлено та оплачено!", "Каса", MessageBoxButton.OK, MessageBoxImage.Information);
+                    this.DialogResult = true;
+                    this.Close();
                 }
             }
             catch (Exception ex)

@@ -38,7 +38,7 @@ namespace Service_Store
             LoadStatuses();
             LoadEmployees();
             LoadRepairData();
-            LoadRepairHistory(); // Завантажуємо історію при відкритті вікна
+            LoadRepairHistory();
             LoadAttachments();
             LoadRepairPartsData();
         }
@@ -280,6 +280,16 @@ namespace Service_Store
                 }
 
                 int oldStatusId = repair.StatusId;
+                var newStatusName = db.RepairStatuses
+                    .Where(status => status.StatusId == newStatusId)
+                    .Select(status => status.Name)
+                    .FirstOrDefault();
+
+                if (newStatusName == null)
+                {
+                    MessageBox.Show("Обраний статус ремонту не знайдено в базі даних!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
                 // 3. Оновлюємо всі поля ремонту з форми
                 repair.StatusId = newStatusId;
@@ -293,11 +303,11 @@ namespace Service_Store
                     repair.AssignedEmployeeId = Convert.ToInt32(cbAssignedEmployee.SelectedValue);
                 }
 
-                if (newStatusId == 9 && repair.CompletedAt == null)
+                if (newStatusName.Equals("Готово до видачі", StringComparison.OrdinalIgnoreCase) && repair.CompletedAt == null)
                 {
                     repair.CompletedAt = DateTime.Now;
                 }
-                else if (newStatusId == 10 && repair.IssuedAt == null)
+                else if (newStatusName.Equals("Видано клієнту", StringComparison.OrdinalIgnoreCase) && repair.IssuedAt == null)
                 {
                     repair.IssuedAt = DateTime.Now;
                 }
@@ -428,7 +438,6 @@ namespace Service_Store
 
             using (var db = new AppDbContext())
             {
-                // Перевіряємо залишок на складі
                 var stockItem = db.WarehouseStocks
                     .Include(w => w.Product)
                     .FirstOrDefault(w => w.ProductId == productId);
@@ -442,19 +451,17 @@ namespace Service_Store
                 var product = stockItem.Product;
                 if (product == null) return;
 
-                // Створюємо запис із назвою деталі
                 var repairPart = new RepairPart
                 {
                     RepairId = _repairId,
                     ProductId = productId,
-                    Name = product.Name, // Записуємо назву у нове поле
+                    Name = product.Name,
                     Quantity = qty,
                     UnitPrice = product.SalePrice
                 };
 
                 db.RepairParts.Add(repairPart);
 
-                // Зменшуємо залишок на складі
                 stockItem.Quantity -= qty;
 
                 db.SaveChanges();
@@ -509,7 +516,6 @@ namespace Service_Store
         /// </summary>
         private void PrintAct_Click(object sender, RoutedEventArgs e)
         {
-            // Викликаємо друк для поточного ремонту
             DocumentPrinter.PrintRepairAct(_repairId);
         }
     }

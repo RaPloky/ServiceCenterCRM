@@ -198,7 +198,7 @@ namespace Service_Store
             }
 
             MessageBox.Show("Ремонт успішно створено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
-            this.DialogResult = true; // Закриваємо вікно з сигналом успіху
+            this.DialogResult = true;
             this.Close();
         }
     }

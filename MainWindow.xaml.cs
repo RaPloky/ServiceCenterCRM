@@ -66,7 +66,6 @@ namespace Service_Center
         {
             using (var db = new AppDbContext())
             {
-                // Завантажуємо список ремонтів із бази даних
                 var devices = db.CustomerDevices.ToDictionary(device => device.DeviceId);
                 _repairs = db.Repairs.ToList();
                 foreach (var repair in _repairs)
@@ -415,7 +414,6 @@ namespace Service_Center
                     string positionName = "Працівник";
                     decimal salary = 0;
 
-                    // Приблизна логіка за ID посад (можеш підкоригувати цифри під свої дані)
                     if (emp.PositionId == (int)PositionRole.ServiceEngineer)
                     {
                         positionName = "Інженер / Майстер";
@@ -593,7 +591,6 @@ namespace Service_Center
         private void DeleteDevice_Click(object sender, RoutedEventArgs e)
         {
             // Отримуємо обраний пристрій із таблиці (DataGrid)
-            // Зверни увагу: тип об'єкта залежить від того, як ти заповнюєш dgDevices (може бути анонімний тип або модель CustomerDevice)
             if (dgDevices.SelectedItem != null)
             {
                 // Отримуємо ID пристрою через динамічне приведення або властивість моделі
@@ -640,7 +637,6 @@ namespace Service_Center
                         }
 
                         // Оновлюємо таблицю пристроїв на екрані
-                        // Викликаємо твій існуючий метод завантаження (наприклад, LoadDevices_Click або аналогічний)
                         LoadDevices_Click(sender, e);
 
                         MessageBox.Show("Пристрій успішно видалено.", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);

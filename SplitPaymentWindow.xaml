@@ -35,14 +35,7 @@
                 <TextBox x:Name="txtCardAmount" Grid.Column="1" Height="28" VerticalContentAlignment="Center" Text="0"/>
             </Grid>
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="140"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Бонуси (BONUS):" VerticalAlignment="Center"/>
-                <TextBox x:Name="txtBonusAmount" Grid.Column="1" Height="28" VerticalContentAlignment="Center" Text="0"/>
-            </Grid>
+            
         </StackPanel>
 
         <Border Grid.Row="2" Background="#F8F9FA" BorderBrush="#DEE2E6" BorderThickness="1" CornerRadius="4" Padding="10" VerticalAlignment="Top">
