@@ -329,8 +329,6 @@ namespace Service_Store
 
             MessageBox.Show("Дані про ремонт та історію статусів успішно збережено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Якщо ти хочеш, щоб вікно не закривалося одразу після збереження (щоб побачити оновлену таблицю), 
-            // можна закоментувати рядок нижче, а закриття залишити на окрему кнопку:
             this.DialogResult = true;
             this.Close();
         }
@@ -342,22 +340,16 @@ namespace Service_Store
         {
             using (var db = new AppDbContext())
             {
-                var repairPartProductIds = db.RepairParts
-                    .Where(repairPart => repairPart.ProductId > 0)
-                    .Select(repairPart => repairPart.ProductId)
-                    .Distinct();
-
                 _availableRepairParts = db.WarehouseStocks
                     .Include(w => w.Product)
                     .Where(w => w.Product != null &&
-                                w.Quantity > 0 &&
-                                repairPartProductIds.Contains(w.ProductId) &&
+                                w.Quantity - w.ReservedQuantity > 0 &&
                                 new[] { 3, 4, 5 }.Contains(w.Product.CategoryId))
                     .Select(w => new
                     {
                         ProductId = w.ProductId,
                         Name = w.Product.Name,
-                        AvailableQuantity = w.Quantity,
+                        AvailableQuantity = w.Quantity - w.ReservedQuantity,
                         UnitPrice = w.Product.SalePrice
                     })
                     .AsEnumerable()
@@ -441,7 +433,7 @@ namespace Service_Store
                     .Include(w => w.Product)
                     .FirstOrDefault(w => w.ProductId == productId);
 
-                if (stockItem == null || stockItem.Quantity < qty)
+                if (stockItem == null || stockItem.Quantity - stockItem.ReservedQuantity < qty)
                 {
                     MessageBox.Show("На складі недостатньо цієї позиції!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
