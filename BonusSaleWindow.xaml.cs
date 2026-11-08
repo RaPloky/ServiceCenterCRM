@@ -5,12 +5,17 @@ using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Service_Store
 {
     public partial class BonusSaleWindow : Window
     {
         private int _employeeId;
+        private List<Product> _products = new();
+        private List<Customer> _customers = new();
+        private Product? _selectedProduct;
+        private Customer? _selectedCustomer;
 
         /// <summary>
         /// Ініціалізує вікно продажу з використанням бонусів.
@@ -27,35 +32,61 @@ namespace Service_Store
         /// </summary>
         private void LoadData()
         {
-            using (var db = new AppDbContext())
+            try
             {
-                cbProducts.ItemsSource = db.Products.ToList();
-                cbCustomers.ItemsSource = db.Customers.ToList();
+                using (var db = new AppDbContext())
+                {
+                    _products = db.Products.OrderBy(product => product.Name).ToList();
+                    _customers = db.Customers.OrderBy(customer => customer.LastName).ThenBy(customer => customer.FirstName).ToList();
+                    ApplyProductFilter();
+                    ApplyCustomerFilter();
+                }
+            }
+            catch (Exception ex)
+            {
+                DatabaseErrorHandler.Show(ex, "Не вдалося завантажити товари та клієнтів.");
             }
         }
 
-        /// <summary>
-        /// Перераховує суму після вибору товару.
-        /// </summary>
-        private void CbProducts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ApplyProductFilter()
         {
-            CalculateTotals();
+            string search = txtProductSearch?.Text.Trim() ?? string.Empty;
+            dgProducts.ItemsSource = _products.Where(product =>
+                string.IsNullOrWhiteSpace(search) ||
+                product.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                product.ProductId.ToString().Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
-        /// <summary>
-        /// Оновлює баланс бонусів і підсумок після вибору клієнта.
-        /// </summary>
-        private void CbCustomers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ProductSearch_TextChanged(object sender, TextChangedEventArgs e) => ApplyProductFilter();
+
+        private void ApplyCustomerFilter()
         {
-            if (cbCustomers.SelectedItem is Customer selectedCustomer)
+            string search = txtCustomerSearch?.Text.Trim() ?? string.Empty;
+            dgCustomers.ItemsSource = _customers.Where(customer =>
+                string.IsNullOrWhiteSpace(search) ||
+                customer.FirstName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                customer.LastName.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        private void CustomerSearch_TextChanged(object sender, TextChangedEventArgs e) => ApplyCustomerFilter();
+
+        private void Products_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (dgProducts.SelectedItem is Product product)
             {
-                txtCustomerBonus.Text = $"{selectedCustomer.BonusBalance:N2} грн";
+                _selectedProduct = product;
+                CalculateTotals();
             }
-            else
+        }
+
+        private void Customers_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (dgCustomers.SelectedItem is Customer customer)
             {
-                txtCustomerBonus.Text = "0.00 грн";
+                _selectedCustomer = customer;
+                txtCustomerBonus.Text = $"{customer.BonusBalance:N2} грн";
+                CalculateTotals();
             }
-            CalculateTotals();
         }
 
         /// <summary>
@@ -71,7 +102,7 @@ namespace Service_Store
         /// </summary>
         private void CalculateTotals()
         {
-            if (cbProducts.SelectedItem is Product product && cbCustomers.SelectedItem is Customer customer)
+            if (_selectedProduct is Product product && _selectedCustomer is Customer customer)
             {
                 decimal price = product.SalePrice;
                 txtProductPrice.Text = $"Ціна товару: {price:N2} грн";
@@ -96,13 +127,13 @@ namespace Service_Store
         /// </summary>
         private void CompleteSale_Click(object sender, RoutedEventArgs e)
         {
-            if (cbProducts.SelectedItem is not Product selectedProduct)
+            if (_selectedProduct is not Product selectedProduct)
             {
                 MessageBox.Show("Оберіть товар для продажу!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (cbCustomers.SelectedItem is not Customer selectedCustomer)
+            if (_selectedCustomer is not Customer selectedCustomer)
             {
                 MessageBox.Show("Оберіть клієнта!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
