@@ -190,6 +190,10 @@ namespace Service_Store
                 if (repair != null)
                 {
                     txtRepairNumber.Text = repair.RepairNumber;
+                    var device = db.CustomerDevices.FirstOrDefault(d => d.DeviceId == repair.DeviceId);
+                    txtDeviceName.Text = device == null
+                        ? "Пристрій не знайдено"
+                        : $"{device.DeviceType}: {device.Brand} {device.Model}".Trim();
                     cbStatuses.SelectedValue = repair.StatusId;
                     cbAssignedEmployee.SelectedValue = repair.AssignedEmployeeId;
                     txtCustomerDescription.Text = repair.CustomerDescription;

@@ -118,6 +118,7 @@
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding RepairId}" Width="50"/>
                             <DataGridTextColumn Header="Номер квитанції" Binding="{Binding RepairNumber}" Width="130"/>
+                            <DataGridTextColumn Header="Пристрій" Binding="{Binding DeviceName}" Width="180"/>
                             <DataGridTextColumn Header="Опис несправності" Binding="{Binding CustomerDescription}" Width="*"/>
                             <DataGridTextColumn Header="Дата прийому" Binding="{Binding ReceivedAt}" Width="150"/>
                             <DataGridTextColumn Header="Орієнтовна ціна" Binding="{Binding EstimatedPrice}" Width="120"/>

@@ -67,7 +67,19 @@ namespace Service_Center
             using (var db = new AppDbContext())
             {
                 // Завантажуємо список ремонтів із бази даних
+                var devices = db.CustomerDevices.ToDictionary(device => device.DeviceId);
                 _repairs = db.Repairs.ToList();
+                foreach (var repair in _repairs)
+                {
+                    if (devices.TryGetValue(repair.DeviceId, out var device))
+                    {
+                        repair.DeviceName = $"{device.Brand} {device.Model}".Trim();
+                    }
+                    else
+                    {
+                        repair.DeviceName = "Не вказано";
+                    }
+                }
                 ApplyRepairSearch();
             }
         }

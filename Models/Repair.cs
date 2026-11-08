@@ -54,6 +54,9 @@ namespace Service_Store.Models
         [Column("issued_at")]
         public DateTime? IssuedAt { get; set; }
 
+        [NotMapped]
+        public string DeviceName { get; set; } = string.Empty;
+
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
 
