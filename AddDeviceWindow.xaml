@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Service_Store.AddDeviceWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Новий пристрій" Height="480" Width="400" 
+        Title="Новий пристрій" Height="504" Width="420" 
         WindowStartupLocation="CenterScreen" ResizeMode="CanResize">
     <Grid Margin="20">
         <Grid.RowDefinitions>

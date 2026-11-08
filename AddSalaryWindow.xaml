@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Service_Store.AddSalaryWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Виплата зарплати" Height="420" Width="400" 
+        Title="Виплата зарплати" Height="441" Width="420" 
         WindowStartupLocation="CenterScreen" ResizeMode="CanResize">
     <Grid Margin="20">
         <Grid.RowDefinitions>

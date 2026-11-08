@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Service_Store.EditRepairWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Керування ремонтом та логування" Height="650" Width="550" 
+        Title="Керування ремонтом та логування" Height="682.5" Width="577.5" 
         WindowStartupLocation="CenterScreen" ResizeMode="CanResize">
     <Grid Margin="15">
         <Grid.RowDefinitions>

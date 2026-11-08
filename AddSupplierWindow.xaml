@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Service_Store.AddSupplierWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Новий постачальник" Height="380" Width="400" 
+        Title="Новий постачальник" Height="399" Width="420" 
         WindowStartupLocation="CenterScreen" ResizeMode="CanResize">
     <Grid Margin="20">
         <Grid.RowDefinitions>
