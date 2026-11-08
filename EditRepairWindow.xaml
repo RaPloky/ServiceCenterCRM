@@ -27,24 +27,35 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="130"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="100"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
-                        <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,8">
-                            <TextBlock Text="Товар/Запчастина:" VerticalAlignment="Center" Margin="0,0,5,0"/>
-                            <ComboBox x:Name="cbWarehouseProducts" Width="220" Height="28" 
-          DisplayMemberPath="DisplayText" 
-          SelectedValuePath="ProductId" 
-          Margin="0,0,10,0"/>
+                        <TextBox x:Name="txtRepairPartSearch" Grid.Row="0" Height="28"
+                                 VerticalContentAlignment="Center" Margin="0,0,0,8"
+                                 ToolTip="Пошук за ID або назвою запчастини"
+                                 TextChanged="RepairPartSearch_TextChanged"/>
 
+                        <DataGrid x:Name="dgAvailableRepairParts" Grid.Row="1" AutoGenerateColumns="False"
+                                  CanUserAddRows="False" IsReadOnly="True"
+                                  MouseDoubleClick="AvailableRepairParts_MouseDoubleClick">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="ID" Binding="{Binding ProductId}" Width="60"/>
+                                <DataGridTextColumn Header="Назва" Binding="{Binding Name}" Width="*"/>
+                                <DataGridTextColumn Header="Залишок" Binding="{Binding AvailableQuantity}" Width="90"/>
+                                <DataGridTextColumn Header="Ціна" Binding="{Binding UnitPrice, StringFormat={}{0:N2}}" Width="100"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0,8,0,8">
                             <TextBlock Text="К-сть:" VerticalAlignment="Center" Margin="0,0,5,0"/>
                             <TextBox x:Name="txtPartQuantity" Text="1" Width="40" Height="28" VerticalContentAlignment="Center" Margin="0,0,10,0"/>
-
-                            <Button Content="Додати до ремонту" Width="130" Height="28" Background="#28A745" Foreground="White" FontWeight="Bold" Click="AddRepairPart_Click"/>
+                            <TextBlock Text="Подвійне натискання додає запчастину" VerticalAlignment="Center" Foreground="Gray"/>
                         </StackPanel>
 
-                        <DataGrid x:Name="dgRepairParts" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                        <DataGrid x:Name="dgRepairParts" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Назва запчастини" Binding="{Binding Name}" Width="200"/>
                                 <DataGridTextColumn Header="Кількість" Binding="{Binding Quantity}" Width="80"/>
@@ -53,7 +64,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
 
-                        <Button Content="Видалити обрану запчастину" Width="180" Height="30" Background="#DC3545" Foreground="White" FontWeight="Bold" Grid.Row="2" HorizontalAlignment="Right" Margin="0,8,0,0" Click="DeleteRepairPart_Click"/>
+                        <Button Content="Видалити обрану запчастину" Width="180" Height="30" Background="#DC3545" Foreground="White" FontWeight="Bold" Grid.Row="4" HorizontalAlignment="Right" Margin="0,8,0,0" Click="DeleteRepairPart_Click"/>
                     </Grid>
                 </GroupBox>
 

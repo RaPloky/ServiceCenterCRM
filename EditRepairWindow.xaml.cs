@@ -16,6 +16,15 @@ namespace Service_Store
     {
         private int _repairId;
         private Employee _currentEmployee;
+        private List<AvailableRepairPart> _availableRepairParts = new();
+
+        private sealed class AvailableRepairPart
+        {
+            public int ProductId { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public int AvailableQuantity { get; set; }
+            public decimal UnitPrice { get; set; }
+        }
 
         /// <summary>
         /// Ініціалізує вікно редагування ремонту.
@@ -333,16 +342,27 @@ namespace Service_Store
         {
             using (var db = new AppDbContext())
             {
-                // Формуємо зручний список для випадаючого списку з урахуванням залишку
-                cbWarehouseProducts.ItemsSource = db.WarehouseStocks
+                _availableRepairParts = db.WarehouseStocks
                     .Include(w => w.Product)
                     .Where(w => w.Product != null && w.Quantity > 0)
                     .Select(w => new
                     {
                         ProductId = w.ProductId,
-                        DisplayText = $"{w.Product.Name} (Залишок: {w.Quantity} шт. — {w.Product.SalePrice} грн)"
+                        Name = w.Product.Name,
+                        AvailableQuantity = w.Quantity,
+                        UnitPrice = w.Product.SalePrice
+                    })
+                    .AsEnumerable()
+                    .Select(w => new AvailableRepairPart
+                    {
+                        ProductId = w.ProductId,
+                        Name = w.Name,
+                        AvailableQuantity = w.AvailableQuantity,
+                        UnitPrice = w.UnitPrice
                     })
                     .ToList();
+
+                ApplyRepairPartFilter();
 
                 // Завантажуємо використані запчастини для поточного ремонту
                 var parts = db.RepairParts
@@ -361,24 +381,50 @@ namespace Service_Store
             }
         }
 
+        private void RepairPartSearch_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            ApplyRepairPartFilter();
+        }
+
+        private void ApplyRepairPartFilter()
+        {
+            string search = txtRepairPartSearch?.Text.Trim() ?? string.Empty;
+            dgAvailableRepairParts.ItemsSource = _availableRepairParts.Where(part =>
+                string.IsNullOrWhiteSpace(search) ||
+                part.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                part.ProductId.ToString().Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        private void AvailableRepairParts_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (dgAvailableRepairParts.SelectedItem is AvailableRepairPart selectedPart)
+            {
+                AddRepairPart(selectedPart.ProductId);
+            }
+        }
+
         /// <summary>
         /// Додає вибрану запчастину до ремонту.
         /// </summary>
         private void AddRepairPart_Click(object sender, RoutedEventArgs e)
         {
-            if (cbWarehouseProducts.SelectedValue == null)
+            if (dgAvailableRepairParts.SelectedItem is not AvailableRepairPart selectedPart)
             {
                 MessageBox.Show("Оберіть товар/запчастину зі складу!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
+            AddRepairPart(selectedPart.ProductId);
+        }
+
+        private void AddRepairPart(int productId)
+        {
 
             if (!int.TryParse(txtPartQuantity.Text, out int qty) || qty <= 0)
             {
                 MessageBox.Show("Введіть коректну кількість!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-
-            int productId = Convert.ToInt32(cbWarehouseProducts.SelectedValue);
 
             using (var db = new AppDbContext())
             {
