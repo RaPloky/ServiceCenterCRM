@@ -342,9 +342,17 @@ namespace Service_Store
         {
             using (var db = new AppDbContext())
             {
+                var repairPartProductIds = db.RepairParts
+                    .Where(repairPart => repairPart.ProductId > 0)
+                    .Select(repairPart => repairPart.ProductId)
+                    .Distinct();
+
                 _availableRepairParts = db.WarehouseStocks
                     .Include(w => w.Product)
-                    .Where(w => w.Product != null && w.Quantity > 0)
+                    .Where(w => w.Product != null &&
+                                w.Quantity > 0 &&
+                                repairPartProductIds.Contains(w.ProductId) &&
+                                new[] { 3, 4, 5 }.Contains(w.Product.CategoryId))
                     .Select(w => new
                     {
                         ProductId = w.ProductId,
