@@ -9,13 +9,20 @@ using System.Windows.Input;
 
 namespace Service_Store
 {
+    public sealed class CartItem
+    {
+        public Product Product { get; set; } = null!;
+        public int Quantity { get; set; }
+        public decimal Total => Product.SalePrice * Quantity;
+    }
+
     public partial class BonusSaleWindow : Window
     {
         private int _employeeId;
         private List<Product> _products = new();
         private List<Customer> _customers = new();
-        private Product? _selectedProduct;
         private Customer? _selectedCustomer;
+        private readonly List<CartItem> _cart = new();
 
         /// <summary>
         /// Ініціалізує вікно продажу з використанням бонусів.
@@ -74,7 +81,64 @@ namespace Service_Store
         {
             if (dgProducts.SelectedItem is Product product)
             {
-                _selectedProduct = product;
+                AddToCart(product);
+                CalculateTotals();
+            }
+        }
+
+        private void AddToCart(Product product)
+        {
+            try
+            {
+                using var db = new AppDbContext();
+                int currentQuantity = _cart.FirstOrDefault(item => item.Product.ProductId == product.ProductId)?.Quantity ?? 0;
+                var stock = db.WarehouseStocks.FirstOrDefault(item => item.ProductId == product.ProductId);
+                int availableQuantity = stock?.Quantity - stock?.ReservedQuantity ?? 0;
+
+                if (stock == null || currentQuantity >= availableQuantity)
+                {
+                    MessageBox.Show("Недостатньо обраного товару на складі!", "Немає товару", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var cartItem = _cart.FirstOrDefault(item => item.Product.ProductId == product.ProductId);
+                if (cartItem == null)
+                {
+                    _cart.Add(new CartItem { Product = product, Quantity = 1 });
+                }
+                else
+                {
+                    cartItem.Quantity++;
+                }
+
+                dgCart.ItemsSource = null;
+                dgCart.ItemsSource = _cart;
+            }
+            catch (Exception ex)
+            {
+                DatabaseErrorHandler.Show(ex, "Не вдалося перевірити залишок товару.");
+            }
+        }
+
+        private void RemoveCartItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgCart.SelectedItem is not CartItem cartItem)
+            {
+                MessageBox.Show("Оберіть товар у кошику для видалення.", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Видалити «{cartItem.Product.Name}» з кошика?",
+                "Підтвердження видалення",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                _cart.Remove(cartItem);
+                dgCart.ItemsSource = null;
+                dgCart.ItemsSource = _cart;
                 CalculateTotals();
             }
         }
@@ -102,10 +166,10 @@ namespace Service_Store
         /// </summary>
         private void CalculateTotals()
         {
-            if (_selectedProduct is Product product && _selectedCustomer is Customer customer)
+            if (_cart.Count > 0 && _selectedCustomer is Customer customer)
             {
-                decimal price = product.SalePrice;
-                txtProductPrice.Text = $"Ціна товару: {price:N2} грн";
+                decimal price = _cart.Sum(item => item.Total);
+                txtProductPrice.Text = $"Сума товарів: {price:N2} грн";
 
                 decimal bonusToSpend = 0;
                 if (decimal.TryParse(txtBonusToSpend.Text, out decimal parsedBonus))
@@ -115,7 +179,7 @@ namespace Service_Store
                 }
 
                 decimal finalAmount = price - bonusToSpend;
-                decimal bonusesEarned = finalAmount * 0.01m; // 1% на залишок від суми покупки
+                decimal bonusesEarned = finalAmount * 0.01m;
 
                 txtFinalAmount.Text = $"До сплати: {finalAmount:N2} грн";
                 txtBonusesEarned.Text = $"Буде нараховано бонусів: {bonusesEarned:N2} грн";
@@ -127,9 +191,9 @@ namespace Service_Store
         /// </summary>
         private void CompleteSale_Click(object sender, RoutedEventArgs e)
         {
-            if (_selectedProduct is not Product selectedProduct)
+            if (_cart.Count == 0)
             {
-                MessageBox.Show("Оберіть товар для продажу!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Додайте хоча б один товар до кошика!", "Попередження", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -142,9 +206,10 @@ namespace Service_Store
             decimal bonusToSpend = 0;
             decimal.TryParse(txtBonusToSpend.Text, out bonusToSpend);
             bonusToSpend = Math.Min(bonusToSpend, selectedCustomer.BonusBalance);
-            bonusToSpend = Math.Min(bonusToSpend, selectedProduct.SalePrice);
+            decimal cartTotal = _cart.Sum(item => item.Total);
+            bonusToSpend = Math.Min(bonusToSpend, cartTotal);
 
-            decimal finalAmount = selectedProduct.SalePrice - bonusToSpend;
+            decimal finalAmount = cartTotal - bonusToSpend;
             decimal bonusesEarned = finalAmount * 0.01m;
 
             try
@@ -154,11 +219,13 @@ namespace Service_Store
                     var dbCustomer = db.Customers.Find(selectedCustomer.CustomerId);
                     if (dbCustomer == null) return;
 
-                    var stock = db.WarehouseStocks
-                        .FirstOrDefault(item => item.ProductId == selectedProduct.ProductId);
-                    if (stock == null || stock.Quantity - stock.ReservedQuantity < 1)
+                    var stockByProduct = db.WarehouseStocks
+                        .Where(item => _cart.Select(cartItem => cartItem.Product.ProductId).Contains(item.ProductId))
+                        .ToDictionary(item => item.ProductId);
+                    if (_cart.Any(cartItem => !stockByProduct.TryGetValue(cartItem.Product.ProductId, out var stock) ||
+                        stock.Quantity - stock.ReservedQuantity < cartItem.Quantity))
                     {
-                        MessageBox.Show("Недостатньо товару на складі для продажу!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("Недостатньо товару на складі для одного або кількох товарів!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
 
@@ -175,15 +242,17 @@ namespace Service_Store
                 db.Sales.Add(sale);
                 db.SaveChanges(); // Зберігаємо, щоб отримати sale.SaleId
 
-                // 2. Додаємо позицію чека
-                var saleItem = new SaleItem
+                foreach (var cartItem in _cart)
                 {
-                    SaleId = sale.SaleId,
-                    ProductId = selectedProduct.ProductId,
-                    Quantity = 1,
-                    UnitPrice = selectedProduct.SalePrice
-                };
-                db.SaleItems.Add(saleItem);
+                    db.SaleItems.Add(new SaleItem
+                    {
+                        SaleId = sale.SaleId,
+                        ProductId = cartItem.Product.ProductId,
+                        Quantity = cartItem.Quantity,
+                        UnitPrice = cartItem.Product.SalePrice,
+                        Total = cartItem.Total
+                    });
+                }
 
                 // 3. Якщо списуємо бонуси
                 if (bonusToSpend > 0)

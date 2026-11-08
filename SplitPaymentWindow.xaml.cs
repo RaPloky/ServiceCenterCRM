@@ -89,6 +89,35 @@ namespace Service_Store
                     }
                 }
 
+                var saleItems = db.SaleItems
+                    .Where(item => item.SaleId == _saleId)
+                    .ToList();
+                if (saleItems.Count == 0)
+                {
+                    MessageBox.Show("Для продажу не знайдено товарних позицій!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var productQuantities = saleItems
+                    .GroupBy(item => item.ProductId)
+                    .ToDictionary(group => group.Key, group => group.Sum(item => item.Quantity));
+                var stocks = db.WarehouseStocks
+                    .Where(stock => productQuantities.Keys.Contains(stock.ProductId))
+                    .ToDictionary(stock => stock.ProductId);
+
+                if (productQuantities.Any(item =>
+                    !stocks.TryGetValue(item.Key, out var stock) ||
+                    stock.Quantity - stock.ReservedQuantity < item.Value))
+                {
+                    MessageBox.Show("Недостатньо товару на складі для завершення продажу!", "Помилка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                foreach (var item in productQuantities)
+                {
+                    stocks[item.Key].Quantity -= item.Value;
+                }
+
                 // Зберігаємо запити по методах оплати у таблицю payments
                 if (cash > 0)
                 {
