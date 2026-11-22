@@ -95,6 +95,54 @@
                             </Grid>
                         </TabItem>
 
+                        <TabItem Header="📦 Продажі за категоріями" x:Name="tabReportCategorySales">
+                            <Grid Margin="10">
+                                <DataGrid x:Name="dgReportCategorySales" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Категорія" Binding="{Binding CategoryName}" Width="*"/>
+                                        <DataGridTextColumn Header="Продано одиниць" Binding="{Binding UnitsSold}" Width="150"/>
+                                        <DataGridTextColumn Header="Виручка (грн)" Binding="{Binding Revenue, StringFormat={}{0:N2}}" Width="160"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="🔧 Часті несправності" x:Name="tabReportRepairIssues">
+                            <Grid Margin="10">
+                                <DataGrid x:Name="dgReportRepairIssues" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Тип несправності" Binding="{Binding IssueType}" Width="*"/>
+                                        <DataGridTextColumn Header="Кількість звернень" Binding="{Binding Occurrences}" Width="180"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="💳 Оплати та бонуси" x:Name="tabReportPaymentBonus">
+                            <Grid Margin="10">
+                                <DataGrid x:Name="dgReportPaymentBonus" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Показник" Binding="{Binding Metric}" Width="*"/>
+                                        <DataGridTextColumn Header="Кількість операцій" Binding="{Binding OperationCount}" Width="180"/>
+                                        <DataGridTextColumn Header="Сума (грн)" Binding="{Binding Amount, StringFormat={}{0:N2}}" Width="180"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
+                        <TabItem Header="👥 Активність клієнтів" x:Name="tabReportCustomerActivity">
+                            <Grid Margin="10">
+                                <DataGrid x:Name="dgReportCustomerActivity" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Клієнт" Binding="{Binding CustomerName}" Width="*"/>
+                                        <DataGridTextColumn Header="Продажі / ремонти" Binding="{Binding ActivityCount}" Width="170"/>
+                                        <DataGridTextColumn Header="Загальна сума (грн)" Binding="{Binding TotalValue, StringFormat={}{0:N2}}" Width="180"/>
+                                        <DataGridTextColumn Header="Баланс бонусів (грн)" Binding="{Binding BonusBalance, StringFormat={}{0:N2}}" Width="180"/>
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </Grid>
+                        </TabItem>
+
                     </TabControl>
                 </Grid>
             </TabItem>

@@ -493,6 +493,80 @@ namespace Service_Center
                     };
                 }).ToList();
                 dgReportRepairs.ItemsSource = repairsReport;
+
+                var categories = db.ProductCategories.ToDictionary(category => category.CategoryId, category => category.Name);
+                var productsById = db.Products.ToDictionary(product => product.ProductId);
+                var categorySalesReport = db.SaleItems
+                    .ToList()
+                    .Where(item => productsById.ContainsKey(item.ProductId))
+                    .GroupBy(item => productsById[item.ProductId].CategoryId)
+                    .Select(group => new
+                    {
+                        CategoryName = categories.TryGetValue(group.Key, out string? categoryName) ? categoryName : $"Категорія #{group.Key}",
+                        UnitsSold = group.Sum(item => item.Quantity),
+                        Revenue = group.Sum(item => item.Total)
+                    })
+                    .OrderByDescending(item => item.Revenue)
+                    .ToList();
+                dgReportCategorySales.ItemsSource = categorySalesReport;
+
+                var repairIssuesReport = repairsList
+                    .Select(repair => string.IsNullOrWhiteSpace(repair.CustomerDescription) ? "Інше / не вказано" : repair.CustomerDescription!.Trim())
+                    .GroupBy(issue => issue, StringComparer.OrdinalIgnoreCase)
+                    .Select(group => new
+                    {
+                        IssueType = group.Key,
+                        Occurrences = group.Count()
+                    })
+                    .OrderByDescending(item => item.Occurrences)
+                    .ToList();
+                dgReportRepairIssues.ItemsSource = repairIssuesReport;
+
+                var paymentBonusReport = db.Payments
+                    .GroupBy(payment => payment.PaymentMethod)
+                    .Select(group => new
+                    {
+                        Metric = $"Оплата: {group.Key}",
+                        OperationCount = group.Count(),
+                        Amount = group.Sum(payment => payment.Amount)
+                    })
+                    .ToList();
+
+                paymentBonusReport.AddRange(db.BonusTransactions
+                    .GroupBy(transaction => transaction.TransactionType)
+                    .Select(group => new
+                    {
+                        Metric = $"Бонуси: {group.Key}",
+                        OperationCount = group.Count(),
+                        Amount = group.Sum(transaction => transaction.Amount)
+                    }));
+                dgReportPaymentBonus.ItemsSource = paymentBonusReport;
+
+                var customerActivityReport = db.Customers
+                    .ToList()
+                    .Select(customer =>
+                    {
+                        int salesCount = db.Sales.Count(sale => sale.CustomerId == customer.CustomerId);
+                        int repairsCount = db.Repairs.Count(repair => repair.CustomerId == customer.CustomerId);
+                        decimal salesValue = db.Sales
+                            .Where(sale => sale.CustomerId == customer.CustomerId)
+                            .Sum(sale => (decimal?)sale.TotalAmount) ?? 0;
+                        decimal repairsValue = db.Repairs
+                            .Where(repair => repair.CustomerId == customer.CustomerId)
+                            .Sum(repair => (decimal?)(repair.FinalPrice ?? repair.EstimatedPrice)) ?? 0;
+
+                        return new
+                        {
+                            CustomerName = $"{customer.LastName} {customer.FirstName}",
+                            ActivityCount = salesCount + repairsCount,
+                            TotalValue = salesValue + repairsValue,
+                            customer.BonusBalance
+                        };
+                    })
+                    .Where(item => item.ActivityCount > 0 || item.BonusBalance > 0)
+                    .OrderByDescending(item => item.TotalValue)
+                    .ToList();
+                dgReportCustomerActivity.ItemsSource = customerActivityReport;
             }
         }
 
@@ -521,6 +595,22 @@ namespace Service_Center
                 else if (selectedTab == tabReportRepairs)
                 {
                     ExcelExporter.ExportDataGridToExcel(dgReportRepairs, "Звіт_Аналітика_Ремонтів");
+                }
+                else if (selectedTab == tabReportCategorySales)
+                {
+                    ExcelExporter.ExportDataGridToExcel(dgReportCategorySales, "Звіт_Продажі_за_категоріями");
+                }
+                else if (selectedTab == tabReportRepairIssues)
+                {
+                    ExcelExporter.ExportDataGridToExcel(dgReportRepairIssues, "Звіт_Часті_несправності");
+                }
+                else if (selectedTab == tabReportPaymentBonus)
+                {
+                    ExcelExporter.ExportDataGridToExcel(dgReportPaymentBonus, "Звіт_Оплати_та_бонуси");
+                }
+                else if (selectedTab == tabReportCustomerActivity)
+                {
+                    ExcelExporter.ExportDataGridToExcel(dgReportCustomerActivity, "Звіт_Активність_клієнтів");
                 }
             }
         }
